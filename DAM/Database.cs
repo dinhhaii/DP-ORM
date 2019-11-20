@@ -8,5 +8,6 @@ namespace DAM
 {
     interface Database
     {
+        void Execute(Query query);
     }
 }
