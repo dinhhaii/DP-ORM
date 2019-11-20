@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAM
+namespace DAM.Entity
 {
-    interface Database
+    class Team
     {
+        public long Id { get; set; }
+        public string Name { get; set; }
+
     }
 }

@@ -11,9 +11,9 @@ namespace DAM
         static void Main(string[] args)
         {
             string connectionString = @"Data Source=.\sqlexpress;Initial Catalog=dam;Integrated Security=True";
-            Database sqlDatabase = new SqlClientDB(connectionString);
-            Query query = SqlClientQuery.InitQuery().Select("*").From("client");
-            sqlDatabase.Execute(query);
+            SqlClientDB sqlDatabase = new SqlClientDB(connectionString);
+            List<object> clients = sqlDatabase.GenerateListFromTable("Client");
+
 
             Console.ReadKey();
 
