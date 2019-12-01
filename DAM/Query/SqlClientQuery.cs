@@ -10,7 +10,7 @@ namespace DAM
     class SqlClientQuery : Query
     {
         private string queryString { get; set; }
-        private List<SqlParameter> sqlParameters { get; set; }
+        private SqlParameter[] sqlParameters { get; set; }
         public SqlClientQuery()
         {
             queryString = "";
@@ -52,7 +52,7 @@ namespace DAM
         {
             return queryString;
         }
-        public void AddParameter(List<SqlParameter> parameters)
+        public void AddParameter(SqlParameter[] parameters)
         {
             sqlParameters = parameters;
         }

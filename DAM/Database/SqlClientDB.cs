@@ -83,18 +83,17 @@ namespace DAM
             }
             return tables;
         }
-        public object FindById(string tableName, long id)
+
+        public List<object> FindByPrimaryKey(List<string> primaryKeys, string tableName)
         {
             string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
             Type entityType = Type.GetType(typeName);
             PropertyInfo[] properties = entityType.GetProperties();
-            List<object> result = new List<object>();
+            List<object> tables = new List<object>();
+
             using (connection = new SqlConnection(connectionString))
             {
-                Query query = SqlClientQuery.InitQuery().Select("*").From(tableName).Where("Id = @Id");
-                List<SqlParameter> parameters = new List<SqlParameter>();
-                parameters.Add(new SqlParameter("@Id", id));
-                (query as SqlClientQuery).AddParameter(parameters);
+                Query query = SqlClientQuery.InitQuery().Select("*").From(tableName);
                 SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
 
                 try
@@ -104,6 +103,7 @@ namespace DAM
                     while (reader.Read())
                     {
                         object entity = Activator.CreateInstance(entityType);
+                        //Get each record and save to 'entity'
                         foreach (PropertyInfo property in properties)
                         {
                             object propertyReader = reader[property.Name];
@@ -123,7 +123,7 @@ namespace DAM
                                 }
                             }
                         }
-                        result.Add(entity);
+                        tables.Add(entity);
                     }
                     reader.Close();
                 }
@@ -132,6 +132,51 @@ namespace DAM
                     Console.Write(e.Message);
                 }
             }
+
+            return tables;
+        }
+
+        public List<ForeignKey> FindForeignKeyOfTable(string tableName)
+        {
+            List<ForeignKey> result = new List<ForeignKey>();
+
+            using (connection = new SqlConnection(connectionString))
+            {
+                string queryString = string.Format(@"SELECT object_name(f.referenced_object_id) RefTableName, col_name(fc.parent_object_id,fc.parent_column_id) ForeignKey FROM sys.foreign_keys AS f INNER JOIN sys.foreign_key_columns AS fc ON f.object_id = fc.constraint_object_id WHERE f.parent_object_id = object_id('{0}')", tableName);
+                Query query = SqlClientQuery.InitQuery(queryString);
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+                    ForeignKey foreignKey = new ForeignKey(tableName);
+
+                    while (reader.Read())
+                    {
+                        string reftableName = (reader["RefTableName"] as string).Trim();
+                        string fk = (reader["ForeignKey"] as string).Trim();
+
+                        if (reftableName != null && fk != null)
+                        {
+                            if (reftableName != foreignKey.refTableName)
+                            {
+                                foreignKey = new ForeignKey(tableName);
+                                foreignKey.refTableName = reftableName;
+                                result.Add(foreignKey);
+                            }
+
+                            result[result.Count - 1].AddForeignKey(fk);
+                        }
+                    }
+                    reader.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.Write(e.Message);
+                }
+            }
+
             return result;
         }
     }

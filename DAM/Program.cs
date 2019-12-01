@@ -12,8 +12,7 @@ namespace DAM
         {
             string connectionString = @"Data Source=.\sqlexpress;Initial Catalog=dam;Integrated Security=True";
             SqlClientDB sqlDatabase = new SqlClientDB(connectionString);
-            List<object> clients = sqlDatabase.GenerateListFromTable("Client");
-
+            List<ForeignKey> foreignKeys = sqlDatabase.FindForeignKeyOfTable("Client");
 
             Console.ReadKey();
 
