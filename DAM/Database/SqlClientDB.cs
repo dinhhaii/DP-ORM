@@ -84,21 +84,39 @@ namespace DAM
             return tables;
         }
 
-        public List<object> FindByPrimaryKey(List<string> primaryKeys, string tableName)
+        public object FindByPrimaryKey(Dictionary<string, object> primaryKeys, string tableName)
         {
             string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
             Type entityType = Type.GetType(typeName);
             PropertyInfo[] properties = entityType.GetProperties();
-            List<object> tables = new List<object>();
 
             using (connection = new SqlConnection(connectionString))
             {
                 Query query = SqlClientQuery.InitQuery().Select("*").From(tableName);
+               
+                if (primaryKeys != null)
+                {
+                    string condition = "";
+                    foreach (KeyValuePair<string, object> item in primaryKeys)
+                    {
+                        if (item.Key != null && item.Value != DBNull.Value)
+                        {
+                            condition += item.Value.GetType() == typeof(string) ? string.Format("{0} = '{1}'", item.Key, item.Value) : string.Format("{0} = {1}", item.Key, item.Value);
+                            if (!item.Equals(primaryKeys.Last()))
+                            {
+                                condition += " and ";
+                            }
+                        }
+                    }
+                    if (condition != "")
+                        query = SqlClientQuery.InitQuery().Select("*").From(tableName).Where(condition);
+                }
                 SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
 
-                try
-                {
+                //try
+                //{
                     connection.Open();
+                    List<ForeignKey> FK = FindForeignKeyOfTable(tableName);
                     SqlDataReader reader = sqlCommand.ExecuteReader();
                     while (reader.Read())
                     {
@@ -106,9 +124,34 @@ namespace DAM
                         //Get each record and save to 'entity'
                         foreach (PropertyInfo property in properties)
                         {
-                            object propertyReader = reader[property.Name];
-                            if (propertyReader != null)
+                            if (property.PropertyType != typeof(string) && property.PropertyType != typeof(int) && property.PropertyType != typeof(long) && 
+                            property.PropertyType != typeof(DateTime) && property.PropertyType != typeof(float) && property.PropertyType != typeof(double))
                             {
+                                Dictionary<string, object> pKey = new Dictionary<string, object>();
+                                foreach(ForeignKey fk in FK)
+                                {
+                                    if (fk.refTableName == property.PropertyType.Name)
+                                    {
+                                        for (int i = 0; i < fk.foreignKeys.Count; i++)
+                                        {
+                                            string pkRefTable = fk.primaryKeysOfRefTable[i];
+                                            string fkTable = fk.foreignKeys[i];
+
+                                            pKey.Add(pkRefTable, reader[fkTable]);
+                                        }
+                                        object obj = FindByPrimaryKey(pKey, fk.refTableName);
+                                        PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                        if (null != propEntity && propEntity.CanWrite)
+                                        {
+                                            propEntity.SetValue(entity, obj, null);
+                                        }
+
+                                    }
+                                }                                
+                            }
+                            else
+                            {
+                                object propertyReader = reader[property.Name];
                                 PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
                                 if (null != propEntity && propEntity.CanWrite)
                                 {
@@ -123,17 +166,17 @@ namespace DAM
                                 }
                             }
                         }
-                        tables.Add(entity);
+                        return entity;
                     }
                     reader.Close();
-                }
-                catch (Exception e)
-                {
-                    Console.Write(e.Message);
-                }
+                //}
+                //catch (Exception e)
+                //{
+                //    Console.Write(e.Message);
+                //}
             }
 
-            return tables;
+            return null;
         }
 
         public List<ForeignKey> FindForeignKeyOfTable(string tableName)
@@ -162,12 +205,58 @@ namespace DAM
                             if (reftableName != foreignKey.refTableName)
                             {
                                 foreignKey = new ForeignKey(tableName);
+                                List<string> pks = FindPrimaryKeyName(reftableName);
                                 foreignKey.refTableName = reftableName;
+                                foreignKey.primaryKeysOfRefTable = pks;
                                 result.Add(foreignKey);
                             }
 
                             result[result.Count - 1].AddForeignKey(fk);
                         }
+                    }
+                    reader.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.Write(e.Message);
+                }
+            }
+
+            return result;
+        }
+
+        public string GetRefTableName(List<ForeignKey> foreignKeys, string propertyName)
+        {
+            foreach (ForeignKey item in foreignKeys)
+            {
+                if (item.foreignKeys.Contains(propertyName))
+                {
+                    return item.refTableName;
+                }
+            }
+            return null;
+        }
+
+        public List<string> FindPrimaryKeyName(string tableName)
+        {
+            List<string> result = new List<string>();
+
+            using (connection = new SqlConnection(connectionString))
+            {
+                string queryString = string.Format(@"SELECT COLUMN_NAME as PrimaryKey FROM dam.INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME LIKE '{0}' AND CONSTRAINT_NAME LIKE 'PK%'", tableName);
+                Query query = SqlClientQuery.InitQuery(queryString);
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        string pk = (reader["PrimaryKey"] as string).Trim();
+                        if (pk != null)
+                            result.Add(pk);
                     }
                     reader.Close();
                 }

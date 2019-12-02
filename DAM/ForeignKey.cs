@@ -11,7 +11,7 @@ namespace DAM
         public string tableName { get; set; }
         public string refTableName { get; set; }
         public List<string> foreignKeys { get; set; }
-
+        public List<string> primaryKeysOfRefTable { get; set; }
         public ForeignKey()
         {
         }
@@ -19,6 +19,7 @@ namespace DAM
         {
             tableName = tblName;
             foreignKeys = new List<string>();
+            primaryKeysOfRefTable = new List<string>();
         }
         public int AddForeignKey(string keyName)
         {
