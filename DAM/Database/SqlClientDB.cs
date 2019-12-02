@@ -48,16 +48,18 @@ namespace DAM
                 try
                 {
                     connection.Open();
+                    List<ForeignKey> FK = FindForeignKeyOfTable(tableName);
+                    List<string> PK = FindPrimaryKeyName(tableName);
+
                     SqlDataReader reader = sqlCommand.ExecuteReader();
                     while (reader.Read())
                     {
                         object entity = Activator.CreateInstance(entityType);
-                        //Get each record and save to 'entity'
-                        foreach (PropertyInfo property in properties)
+                        if (FK.Count == 0)
                         {
-                            object propertyReader = reader[property.Name];
-                            if (propertyReader != null)
+                            foreach (PropertyInfo property in properties)
                             {
+                                object propertyReader = reader[property.Name];
                                 PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
                                 if (null != propEntity && propEntity.CanWrite)
                                 {
@@ -71,6 +73,15 @@ namespace DAM
                                     }
                                 }
                             }
+                        }
+                        else
+                        {
+                            Dictionary<string, object> pKey = new Dictionary<string, object>();
+                            foreach(string PKName in PK)
+                            {
+                                pKey.Add(PKName, reader[PKName]);
+                            }
+                            entity = FindByPrimaryKey(pKey, tableName);
                         }
                         tables.Add(entity);
                     }
@@ -92,7 +103,7 @@ namespace DAM
 
             using (connection = new SqlConnection(connectionString))
             {
-                Query query = SqlClientQuery.InitQuery().Select("*").From(tableName);
+                Query query = SqlClientQuery.InitQuery();
                
                 if (primaryKeys != null)
                 {
@@ -113,8 +124,8 @@ namespace DAM
                 }
                 SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
 
-                //try
-                //{
+                try
+                {
                     connection.Open();
                     List<ForeignKey> FK = FindForeignKeyOfTable(tableName);
                     SqlDataReader reader = sqlCommand.ExecuteReader();
@@ -169,11 +180,11 @@ namespace DAM
                         return entity;
                     }
                     reader.Close();
-                //}
-                //catch (Exception e)
-                //{
-                //    Console.Write(e.Message);
-                //}
+                }
+                catch (Exception e)
+                {
+                    Console.Write(e.Message);
+                }
             }
 
             return null;

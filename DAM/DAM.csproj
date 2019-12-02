@@ -48,6 +48,7 @@
     <Compile Include="Attribute\PrimaryKey.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Entity\Client.cs" />
+    <Compile Include="Entity\Information.cs" />
     <Compile Include="Entity\Organization.cs" />
     <Compile Include="Entity\Team.cs" />
     <Compile Include="ForeignKey.cs" />

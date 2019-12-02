@@ -19,7 +19,7 @@ namespace DAM
             Dictionary<string, object> pk = new Dictionary<string, object>();
             pk.Add("Id", 3);
 
-            Client obj = sqlDatabase.FindByPrimaryKey(pk, "Client") as Client;
+            List<object> list = sqlDatabase.GenerateListFromTable("Client");
 
             Console.ReadKey();
 
