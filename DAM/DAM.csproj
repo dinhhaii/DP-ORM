@@ -43,9 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attribute\Table.cs" />
-    <Compile Include="Attribute\OneToOne.cs" />
-    <Compile Include="Attribute\PrimaryKey.cs" />
+    <Compile Include="AttributeEntity\Table.cs" />
+    <Compile Include="AttributeEntity\OneToOne.cs" />
+    <Compile Include="AttributeEntity\PrimaryKey.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\OracleClientDB.cs" />
     <Compile Include="EntityQuery\DAMEntity.cs" />

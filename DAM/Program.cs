@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using DAM.Entity;
+using DAM.EntityQuery;
 
 namespace DAM
 {
@@ -16,10 +17,12 @@ namespace DAM
             string connectionString = @"Data Source=DESKTOP-8JKPIIU\SQLEXPRESS2017;Initial Catalog=Dam;Integrated Security=True";
             IDatabase sqlDatabase = new SqlClientDB(connectionString);
             //List<ForeignKey> foreignKeys = sqlDatabase.FindForeignKeyOfTable("Client");
-
+            SqlDAMEntity sqlDAMEntity = new SqlDAMEntity(sqlDatabase, "Client");
+            
             Dictionary<string, object> pk = new Dictionary<string, object>();
             pk.Add("Id", 3);
-
+            object client = sqlDAMEntity.FindById(1);
+            sqlDAMEntity.Update(client);
             List<object> list = sqlDatabase.GenerateListFromTable("Client");
             List<object> list1 = sqlDatabase.GenerateListFromTable("Client");
             int k = 0;

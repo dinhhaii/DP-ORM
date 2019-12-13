@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAM.EntityQuery
 {
-    class SqlDAMEntity : DAMEntity
+    public class SqlDAMEntity : DAMEntity
     {
         public SqlDAMEntity(IDatabase database, string tableName) :base(database,tableName)
         {
@@ -18,12 +18,16 @@ namespace DAM.EntityQuery
         }
         public override List<object> ToList()
         {
-            return null;
+            return _database.GenerateListFromTable(TableName);
         }
 
-        public override object FindById(int key)
+        public override object FindById(object key)
         {
-            return null;
+            Dictionary<string, object> primaryKey = new Dictionary<string, object>();
+
+            var listprimaryKeyName = _database.FindPrimaryKeyName(TableName);
+            primaryKey.Add(listprimaryKeyName[0], key);
+            return _database.FindByPrimaryKey(primaryKey, TableName);
         }
 
         public override int Update(List<object> listObj)
@@ -33,6 +37,7 @@ namespace DAM.EntityQuery
 
         public override object Update(object obj)
         {
+            _database.UpdateObjectToDB(obj);
             return 0;
         }
 

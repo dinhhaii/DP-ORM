@@ -48,6 +48,30 @@ namespace DAM
             return this;
         }
 
+        public Query Update(string table)
+        {
+            queryString += string.Format("UPDATE {0} ", table);
+            return this;
+        }
+
+        public Query Set(Dictionary<string,object> valueUpdate)
+        {
+            string condition = "";
+            queryString += string.Format("SET ");
+            foreach (var item in valueUpdate)
+            {
+                if (item.Key != null && item.Value != DBNull.Value)
+                {
+                    queryString += item.Value.GetType() == typeof(string) ? string.Format("{0} = '{1}' ", item.Key, item.Value) : string.Format("{0} = {1} ", item.Key, item.Value);
+                    if (!item.Equals(valueUpdate.Last()))
+                    {
+                        queryString += " and ";
+                    }
+                }
+            }
+            return this;
+        }
+
         public string QueryString()
         {
             return queryString;

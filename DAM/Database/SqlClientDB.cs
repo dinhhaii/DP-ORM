@@ -95,6 +95,7 @@ namespace DAM
             return tables;
         }
 
+
         public object FindByPrimaryKey(Dictionary<string, object> primaryKeys, string tableName)
         {
             string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
@@ -190,6 +191,81 @@ namespace DAM
             return null;
         }
 
+        public int UpdateObjectToDB(object obj)
+        {
+            
+            string tableName = "";
+            Dictionary<string, object> valueUpdate = new Dictionary<string, object>();
+            Attribute[] attributes = Attribute.GetCustomAttributes(obj.GetType());
+            Type entityType = Type.GetType(obj.GetType().ToString());
+            PropertyInfo[] properties = entityType.GetProperties();
+
+            foreach (var attr in attributes)
+            {
+                tableName = attr.ToString();
+            }
+            List<string> columnName = getColumnnameTable(tableName);
+
+            foreach (PropertyInfo property in properties)
+            {
+                object propertyValue = obj.GetType().GetProperty(property.Name).GetValue(obj, null);
+                Type typeProperty = propertyValue.GetType();
+                valueUpdate.Add(property.Name, propertyValue);
+            }
+            foreach(var item in columnName)
+            {
+
+            }
+            using (connection = new SqlConnection(connectionString))
+            {
+                Query query = SqlClientQuery.InitQuery();
+                var conditionValue = FindPrimaryKeyName(tableName);
+                string condition = "";
+                foreach(var item in conditionValue)
+                {
+                    condition += valueUpdate[item].GetType() == typeof(string) ? string.Format("{0} = '{1}'", item, valueUpdate[item]) : string.Format("{0} = {1}", item, valueUpdate[item]);
+                    if (!item.Equals(conditionValue.Last()))
+                    {
+                        condition += " and ";
+                    }
+                }
+                query.Update(tableName).Set(valueUpdate).Where(condition);
+            }
+            return 0;
+        }
+
+        public List<string> getColumnnameTable(string tableName)
+        {
+            List<string> result = new List<string>();
+            using (connection = new SqlConnection(connectionString))
+            {
+                string queryString = @"SELECT Column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" + tableName + "'";
+                Query query = SqlClientQuery.InitQuery(queryString);
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+                    ForeignKey foreignKey = new ForeignKey(tableName);
+
+                    while (reader.Read())
+                    {
+                        for(int i = 0;i<reader.FieldCount;i++)
+                        {
+                            result.Add((string)reader.GetValue(i));
+                        } 
+                    }
+                    reader.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.Write(e.Message);
+                }
+
+            }
+            return result;
+        }
         public List<ForeignKey> FindForeignKeyOfTable(string tableName)
         {
             List<ForeignKey> result = new List<ForeignKey>();

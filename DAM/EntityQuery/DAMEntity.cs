@@ -8,7 +8,7 @@ namespace DAM.EntityQuery
 {
     public class DAMEntity
     {
-        private IDatabase _database;
+        protected IDatabase _database;
         public string TableName { get; set; }
         public void setIDatabase(IDatabase db)
         {
@@ -30,7 +30,7 @@ namespace DAM.EntityQuery
             return null;
         }
 
-        public virtual object FindById(int key)
+        public virtual object FindById(object key)
         {
             return null;
         }
