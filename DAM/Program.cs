@@ -12,15 +12,17 @@ namespace DAM
     {
         static void Main(string[] args)
         {
-            string connectionString = @"Data Source=.\sqlexpress;Initial Catalog=dam;Integrated Security=True";
-            SqlClientDB sqlDatabase = new SqlClientDB(connectionString);
+           
+            string connectionString = @"Data Source=DESKTOP-8JKPIIU\SQLEXPRESS2017;Initial Catalog=Dam;Integrated Security=True";
+            IDatabase sqlDatabase = new SqlClientDB(connectionString);
             //List<ForeignKey> foreignKeys = sqlDatabase.FindForeignKeyOfTable("Client");
 
             Dictionary<string, object> pk = new Dictionary<string, object>();
             pk.Add("Id", 3);
 
             List<object> list = sqlDatabase.GenerateListFromTable("Client");
-
+            List<object> list1 = sqlDatabase.GenerateListFromTable("Client");
+            int k = 0;
             Console.ReadKey();
 
         }

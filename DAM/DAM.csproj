@@ -43,10 +43,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attribute\DAMEntity.cs" />
+    <Compile Include="Attribute\Table.cs" />
     <Compile Include="Attribute\OneToOne.cs" />
     <Compile Include="Attribute\PrimaryKey.cs" />
     <Compile Include="Database\Database.cs" />
+    <Compile Include="Database\OracleClientDB.cs" />
+    <Compile Include="EntityQuery\DAMEntity.cs" />
+    <Compile Include="EntityQuery\OracleDAMEntity.cs" />
+    <Compile Include="EntityQuery\SqlDAMEntity.cs" />
     <Compile Include="Entity\Client.cs" />
     <Compile Include="Entity\Information.cs" />
     <Compile Include="Entity\Organization.cs" />

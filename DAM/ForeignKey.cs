@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAM
 {
-    class ForeignKey
+    public class ForeignKey
     {
         public string tableName { get; set; }
         public string refTableName { get; set; }

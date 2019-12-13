@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace DAM
 {
-    interface Database
+    public interface IDatabase
     {
+        List<object> GenerateListFromTable(string tableName);
+        object FindByPrimaryKey(Dictionary<string, object> primaryKeys, string tableName);
+        List<ForeignKey> FindForeignKeyOfTable(string tableName);
+
+        string GetRefTableName(List<ForeignKey> foreignKeys, string propertyName);
+        List<string> FindPrimaryKeyName(string tableName);
     }
 }

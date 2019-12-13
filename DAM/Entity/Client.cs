@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAM.Entity
 {
-    [DAMEntity("Client")]
+    [Table("Client")]
     class Client
     {
         [PrimaryKey] public long Id { get; set; }

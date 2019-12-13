@@ -7,7 +7,7 @@ using DAM.Attribute;
 
 namespace DAM.Entity
 {
-    [DAMEntity("Team")]
+    [Table("Team")]
     class Team
     {
         [PrimaryKey]

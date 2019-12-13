@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DAM
 {
-    class SqlClientDB : Database
+    class SqlClientDB : IDatabase
     {
         private static string connectionString { get; set; }
         private static SqlConnection connection { get; set; }

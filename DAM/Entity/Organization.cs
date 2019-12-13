@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAM.Entity
 {
-    [DAMEntity("Organization")]
+    [Table("Organization")]
     class Organization
     {
         [PrimaryKey]
