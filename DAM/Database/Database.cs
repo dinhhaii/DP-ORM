@@ -15,5 +15,6 @@ namespace DAM
         string GetRefTableName(List<ForeignKey> foreignKeys, string propertyName);
         List<string> FindPrimaryKeyName(string tableName);
         int UpdateObjectToDB(object obj);
+        int AddObjectToDB(object obj);
     }
 }

@@ -77,7 +77,7 @@ namespace DAM
                         else
                         {
                             Dictionary<string, object> pKey = new Dictionary<string, object>();
-                            foreach(string PKName in PK)
+                            foreach (string PKName in PK)
                             {
                                 pKey.Add(PKName, reader[PKName]);
                             }
@@ -105,7 +105,7 @@ namespace DAM
             using (connection = new SqlConnection(connectionString))
             {
                 Query query = SqlClientQuery.InitQuery();
-               
+
                 if (primaryKeys != null)
                 {
                     string condition = "";
@@ -136,11 +136,11 @@ namespace DAM
                         //Get each record and save to 'entity'
                         foreach (PropertyInfo property in properties)
                         {
-                            if (property.PropertyType != typeof(string) && property.PropertyType != typeof(int) && property.PropertyType != typeof(long) && 
+                            if (property.PropertyType != typeof(string) && property.PropertyType != typeof(int) && property.PropertyType != typeof(long) &&
                             property.PropertyType != typeof(DateTime) && property.PropertyType != typeof(float) && property.PropertyType != typeof(double))
                             {
                                 Dictionary<string, object> pKey = new Dictionary<string, object>();
-                                foreach(ForeignKey fk in FK)
+                                foreach (ForeignKey fk in FK)
                                 {
                                     if (fk.refTableName == property.PropertyType.Name)
                                     {
@@ -159,7 +159,7 @@ namespace DAM
                                         }
 
                                     }
-                                }                                
+                                }
                             }
                             else
                             {
@@ -191,9 +191,10 @@ namespace DAM
             return null;
         }
 
+        //Update
         public int UpdateObjectToDB(object obj)
         {
-            
+
             string tableName = "";
             int result = 0;
             Dictionary<string, object> valueUpdate = new Dictionary<string, object>();
@@ -210,10 +211,9 @@ namespace DAM
             foreach (PropertyInfo property in properties)
             {
                 object propertyValue = obj.GetType().GetProperty(property.Name).GetValue(obj, null);
-                Type typeProperty = propertyValue.GetType();
                 foreach (var item in columnName)
                 {
-                    if(item==property.Name)
+                    if (item == property.Name)
                     {
                         valueUpdate.Add(property.Name, propertyValue);
                     }
@@ -225,7 +225,7 @@ namespace DAM
                 Query query = SqlClientQuery.InitQuery();
                 var conditionValue = FindPrimaryKeyName(tableName);
                 string condition = "";
-                foreach(var item in conditionValue)
+                foreach (var item in conditionValue)
                 {
                     condition += valueUpdate[item].GetType() == typeof(string) ? string.Format("{0} = '{1}'", item, valueUpdate[item]) : string.Format("{0} = {1}", item, valueUpdate[item]);
                     if (!item.Equals(conditionValue.Last()))
@@ -236,16 +236,16 @@ namespace DAM
 
                 // Remove Primary in SET
 
-                    foreach (var item in conditionValue)
+                foreach (var item in conditionValue)
+                {
+                    if (valueUpdate.ContainsKey(item))
                     {
-                        if(valueUpdate.ContainsKey(item))
-                        {
-                            valueUpdate.Remove(item);
-                            continue;
-                        }
+                        valueUpdate.Remove(item);
+                        continue;
                     }
+                }
 
-                if (condition!="")
+                if (condition != "")
                     query.Update(tableName).Set(valueUpdate).Where(condition);
                 var connection1 = new SqlConnection(connectionString);
                 SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection1);
@@ -257,7 +257,76 @@ namespace DAM
             return result;
         }
 
-        public List<string> getColumnnameTable(string tableName)
+        //Add 
+        public int AddObjectToDB(object obj)
+        {
+
+            string tableName = "";
+            int result = 0;
+            Dictionary<string, object> valueAdd = new Dictionary<string, object>();
+            Attribute[] attributes = Attribute.GetCustomAttributes(obj.GetType());
+            Type entityType = Type.GetType(obj.GetType().ToString());
+            PropertyInfo[] properties = entityType.GetProperties();
+
+            foreach (var attr in attributes)
+            {
+                tableName = attr.ToString();
+            }
+            List<string> columnName = getColumnnameTable(tableName);
+            List<string> foreignKeyName = getColumnForeignKeyNameOfTable(tableName);
+            foreach (PropertyInfo property in properties)
+            {
+                object propertyValue = obj.GetType().GetProperty(property.Name).GetValue(obj, null);
+                foreach (var item in columnName)
+                {
+                    if (item == property.Name)
+                    {
+                        valueAdd.Add(property.Name, propertyValue);
+                    }
+                }
+
+            }
+            using (connection = new SqlConnection(connectionString))
+            {
+                Query query = SqlClientQuery.InitQuery();
+                var conditionValue = FindPrimaryKeyName(tableName);
+
+                // Remove Primary in Add and ForeignKeyid if ==0
+
+                foreach (var item in conditionValue)
+                {
+                    if (valueAdd.ContainsKey(item))
+                    {
+                        valueAdd.Remove(item);
+                        continue;
+                    }
+                }
+                try
+                {
+                    foreach (var item in foreignKeyName)
+                    {
+                        if (valueAdd.ContainsKey(item) && (int)valueAdd[item] == 0)
+                        {
+                            valueAdd.Remove(item);
+                            continue;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+
+                query.Insert(tableName).Values(valueAdd);
+                var connection1 = new SqlConnection(connectionString);
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection1);
+                connection1.Open();
+                result = sqlCommand.ExecuteNonQuery();
+                connection1.Close();
+            }
+
+            return result;
+        }
+        private List<string> getColumnnameTable(string tableName)
         {
             List<string> result = new List<string>();
             using (connection = new SqlConnection(connectionString))
@@ -270,14 +339,13 @@ namespace DAM
                 {
                     connection.Open();
                     SqlDataReader reader = sqlCommand.ExecuteReader();
-                    ForeignKey foreignKey = new ForeignKey(tableName);
 
                     while (reader.Read())
                     {
-                        for(int i = 0;i<reader.FieldCount;i++)
+                        for (int i = 0; i < reader.FieldCount; i++)
                         {
                             result.Add((string)reader.GetValue(i));
-                        } 
+                        }
                     }
                     reader.Close();
                 }
@@ -345,6 +413,39 @@ namespace DAM
                 }
             }
             return null;
+        }
+
+        private List<string> getColumnForeignKeyNameOfTable(string tableName)
+        {
+            List<string> result = new List<string>();
+
+            using (connection = new SqlConnection(connectionString))
+            {
+                string queryString = string.Format(@"SELECT COLUMN_NAME as Foreignkey FROM dam.INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME LIKE '{0}' AND CONSTRAINT_NAME LIKE 'FK%'", tableName);
+                Query query = SqlClientQuery.InitQuery(queryString);
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            result.Add((string)reader.GetValue(i));
+                        }
+                    }
+                    reader.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.Write(e.Message);
+                }
+            }
+
+            return result;
         }
 
         public List<string> FindPrimaryKeyName(string tableName)
