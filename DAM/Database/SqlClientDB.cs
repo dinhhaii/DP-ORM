@@ -210,10 +210,13 @@ namespace DAM
             {
                 object propertyValue = obj.GetType().GetProperty(property.Name).GetValue(obj, null);
                 Type typeProperty = propertyValue.GetType();
-                valueUpdate.Add(property.Name, propertyValue);
-            }
-            foreach(var item in columnName)
-            {
+                foreach (var item in columnName)
+                {
+                    if(item==property.Name)
+                    {
+                        valueUpdate.Add(property.Name, propertyValue);
+                    }
+                }
 
             }
             using (connection = new SqlConnection(connectionString))
