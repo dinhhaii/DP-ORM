@@ -30,15 +30,24 @@ namespace DAM.EntityQuery
             return _database.FindByPrimaryKey(primaryKey, TableName);
         }
 
+        //Return number of object are updated 
         public override int Update(List<object> listObj)
         {
-            return 0;
+            int result = 0;
+            foreach(var item in listObj)
+            {
+               if(_database.UpdateObjectToDB(item)>0)
+               {
+                    result += 1;
+               }
+
+            }
+            return result;
         }
 
         public override object Update(object obj)
-        {
-            _database.UpdateObjectToDB(obj);
-            return 0;
+        {           
+            return _database.UpdateObjectToDB(obj); ;
         }
 
         public override int Add(List<object> listObj)
@@ -48,7 +57,7 @@ namespace DAM.EntityQuery
 
         public override int Add(object obj)
         {
-            return 0;
+            return _database.AddObjectToDB(obj);
         }
 
         public override int Delete(List<object> listObj)

@@ -56,7 +56,6 @@ namespace DAM
 
         public Query Set(Dictionary<string,object> valueUpdate)
         {
-            string condition = "";
             queryString += string.Format("SET ");
             foreach (var item in valueUpdate)
             {
@@ -71,6 +70,49 @@ namespace DAM
             }
             return this;
         }
+
+        public Query Insert(string table)
+        {
+            queryString += string.Format("INSERT INTO {0} ", table);
+            return this;
+        }
+
+        public Query Values(Dictionary<string, object> valueAdd)
+        {
+            queryString += "(";
+            foreach (var item in valueAdd)
+            {
+                if (item.Key != null && item.Value != DBNull.Value)
+                {
+
+                    if (item.Equals(valueAdd.Last()))
+                    {
+                        queryString += ( item.Key + ")" );
+                    } else
+                    {
+                        queryString += (item.Key + ", ");
+                    }
+                }
+            }
+
+            queryString += " VALUES (";
+            foreach (var item in valueAdd)
+            {
+                if (item.Key != null && item.Value != DBNull.Value)
+                {
+                    queryString += item.Value.GetType() == typeof(string) ? string.Format("'{0}' ", item.Value) : string.Format("{0} ",item.Value);
+                    if (!item.Equals(valueAdd.Last()))
+                    {
+                        queryString += ", ";
+                    } else
+                    {
+                        queryString += ")";
+                    }
+                }
+            }
+            return this;
+        }
+
 
         public string QueryString()
         {
