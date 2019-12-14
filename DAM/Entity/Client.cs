@@ -13,6 +13,8 @@ namespace DAM.Entity
         [PrimaryKey] public long Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public int OrganizationId { get; set; }
+        public int TeamId { get; set; }
         [OneToOne] public Organization organization { get; set; }
         [OneToOne] public Team team { get; set; }
     }

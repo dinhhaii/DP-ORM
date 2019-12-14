@@ -65,7 +65,7 @@ namespace DAM
                     queryString += item.Value.GetType() == typeof(string) ? string.Format("{0} = '{1}' ", item.Key, item.Value) : string.Format("{0} = {1} ", item.Key, item.Value);
                     if (!item.Equals(valueUpdate.Last()))
                     {
-                        queryString += " and ";
+                        queryString += ", ";
                     }
                 }
             }

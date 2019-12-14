@@ -21,7 +21,8 @@ namespace DAM
             
             Dictionary<string, object> pk = new Dictionary<string, object>();
             pk.Add("Id", 3);
-            object client = sqlDAMEntity.FindById(1);
+            Client client = sqlDAMEntity.FindById(1) as Client;
+            client.Username = "Test";
             sqlDAMEntity.Update(client);
             List<object> list = sqlDatabase.GenerateListFromTable("Client");
             List<object> list1 = sqlDatabase.GenerateListFromTable("Client");

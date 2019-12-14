@@ -195,6 +195,7 @@ namespace DAM
         {
             
             string tableName = "";
+            int result = 0;
             Dictionary<string, object> valueUpdate = new Dictionary<string, object>();
             Attribute[] attributes = Attribute.GetCustomAttributes(obj.GetType());
             Type entityType = Type.GetType(obj.GetType().ToString());
@@ -232,9 +233,28 @@ namespace DAM
                         condition += " and ";
                     }
                 }
-                query.Update(tableName).Set(valueUpdate).Where(condition);
+
+                // Remove Primary in SET
+
+                    foreach (var item in conditionValue)
+                    {
+                        if(valueUpdate.ContainsKey(item))
+                        {
+                            valueUpdate.Remove(item);
+                            continue;
+                        }
+                    }
+
+                if (condition!="")
+                    query.Update(tableName).Set(valueUpdate).Where(condition);
+                var connection1 = new SqlConnection(connectionString);
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection1);
+                connection1.Open();
+                result = sqlCommand.ExecuteNonQuery();
+                connection1.Close();
             }
-            return 0;
+
+            return result;
         }
 
         public List<string> getColumnnameTable(string tableName)
