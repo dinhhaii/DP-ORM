@@ -148,7 +148,10 @@ namespace DAM
                                         {
                                             string pkRefTable = fk.primaryKeysOfRefTable[i];
                                             string fkTable = fk.foreignKeys[i];
-
+                                            if (reader[fkTable] == null)
+                                            {
+                                                throw new Exception("Foreign key must be set a value!");
+                                            }
                                             pKey.Add(pkRefTable, reader[fkTable]);
                                         }
                                         object obj = FindByPrimaryKey(pKey, fk.refTableName);
@@ -468,6 +471,48 @@ namespace DAM
                         string pk = (reader["PrimaryKey"] as string).Trim();
                         if (pk != null)
                             result.Add(pk);
+                    }
+                    reader.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.Write(e.Message);
+                }
+            }
+
+            return result;
+        }
+
+        public DataTable GroupWithCondition(string tableName, string selectClause, string whereClause, string groupByClause, string havingClause)
+        {
+            DataTable result = new DataTable();
+
+            using (connection = new SqlConnection(connectionString))
+            {
+                Query query = SqlClientQuery.InitQuery().Select(selectClause).From(tableName).Where(whereClause).GroupBy(groupByClause).Having(havingClause);
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
+                string[] colNamesArray = selectClause.Split(',');
+                List<string> colNamesList = new List<string>();
+                foreach (var columnName in colNamesArray)
+                {
+                    colNamesList.Add(columnName.Trim());
+                }
+
+                result.columnsName = colNamesList;
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        List<object> valuesOfRow = new List<object>();
+                        foreach(var colName in result.columnsName)
+                        {
+                            valuesOfRow.Add(reader[colName]);
+                        }
+                        result.AddRow(valuesOfRow);
                     }
                     reader.Close();
                 }
