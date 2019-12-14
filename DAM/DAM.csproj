@@ -56,7 +56,6 @@
     <Compile Include="Entity\Organization.cs" />
     <Compile Include="Entity\Team.cs" />
     <Compile Include="ForeignKey.cs" />
-    <Compile Include="MyTypeBuilder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\Query.cs" />

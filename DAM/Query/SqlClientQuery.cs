@@ -72,6 +72,18 @@ namespace DAM
             return this;
         }
 
+        public Query GroupBy(string property)
+        {
+            queryString += string.Format("GROUP BY {0} ", property);
+            return this;
+        }
+
+        public Query Having(string condition)
+        {
+            queryString += string.Format("HAVING {0} ", condition);
+            return this;
+        }
+
         public string QueryString()
         {
             return queryString;

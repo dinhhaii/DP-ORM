@@ -14,6 +14,8 @@ namespace DAM
         Query Where(string property);
         Query Update(string property);
         Query Set(Dictionary<string, object> valueUpdate);
+        Query GroupBy(string property);
+        Query Having(string condition);
         string QueryString();
         object GenerateCommand(object connection);
     }
