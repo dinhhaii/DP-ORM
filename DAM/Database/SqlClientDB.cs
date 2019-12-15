@@ -329,6 +329,60 @@ namespace DAM
 
             return result;
         }
+
+        public int DeleteObjectInDB(object obj)
+        {
+            string tableName = "";
+            int result = 0;
+            Dictionary<string, object> valueCondition = new Dictionary<string, object>();
+            Attribute[] attributes = Attribute.GetCustomAttributes(obj.GetType());
+            Type entityType = Type.GetType(obj.GetType().ToString());
+            PropertyInfo[] properties = entityType.GetProperties();
+
+
+            foreach (var attr in attributes)
+            {
+                tableName = attr.ToString();
+            }
+            var primaryName = FindPrimaryKeyName(tableName);
+            foreach (PropertyInfo property in properties)
+            {
+                object propertyValue = obj.GetType().GetProperty(property.Name).GetValue(obj, null);
+                foreach (var item in primaryName)
+                {
+                    if (item.ToLower() == property.Name.ToLower())
+                    {
+                        valueCondition.Add(item, propertyValue);
+                        break;
+                    }
+                }
+
+            }
+
+            using (connection = new SqlConnection(connectionString))
+            {
+                Query query = SqlClientQuery.InitQuery();
+
+                string condition = "";
+
+                foreach (var item in primaryName)
+                {
+                    condition += valueCondition[item].GetType() == typeof(string) ? string.Format("{0} = '{1}'", item, valueCondition[item]) : string.Format("{0} = {1}", item, valueCondition[item]);
+                    if (!item.Equals(primaryName.Last()))
+                    {
+                        condition += " and ";
+                    }
+                }
+                query.Delete(tableName).Where(condition);
+                var connection1 = new SqlConnection(connectionString);
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection1);
+                connection1.Open();
+                result = sqlCommand.ExecuteNonQuery();
+                connection1.Close();
+            }
+            return result;
+        }
+
         private List<string> getColumnnameTable(string tableName)
         {
             List<string> result = new List<string>();

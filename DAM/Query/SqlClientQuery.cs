@@ -71,6 +71,12 @@ namespace DAM
             return this;
         }
 
+        public Query Delete(string table)
+        {
+            queryString += string.Format("DELETE FROM {0} ", table);
+            return this;
+        }
+
         public Query GroupBy(string property)
         {
             queryString += string.Format("GROUP BY {0} ", property);

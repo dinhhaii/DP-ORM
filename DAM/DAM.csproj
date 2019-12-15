@@ -48,6 +48,7 @@
     <Compile Include="AttributeEntity\PrimaryKey.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\OracleClientDB.cs" />
+    <Compile Include="DataTable.cs" />
     <Compile Include="EntityQuery\DAMEntity.cs" />
     <Compile Include="EntityQuery\OracleDAMEntity.cs" />
     <Compile Include="EntityQuery\SqlDAMEntity.cs" />

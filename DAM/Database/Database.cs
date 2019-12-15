@@ -17,6 +17,7 @@ namespace DAM
         int UpdateObjectToDB(object obj);
         int AddObjectToDB(object obj);
         DataTable GroupWithCondition(string tableName, string selectClause, string whereClause, string groupByClause, string havingClause);
+        int DeleteObjectInDB(object obj);
 
     }
 }

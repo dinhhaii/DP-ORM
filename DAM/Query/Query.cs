@@ -19,6 +19,8 @@ namespace DAM
         Query Insert(string table);
         Query Values(Dictionary<string, object> valueAdd);
 
+        Query Delete(string table);
+
         string QueryString();
         object GenerateCommand(object connection);
     }
