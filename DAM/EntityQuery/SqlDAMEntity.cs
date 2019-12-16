@@ -23,11 +23,20 @@ namespace DAM.EntityQuery
 
         public override object FindById(object key)
         {
-            Dictionary<string, object> primaryKey = new Dictionary<string, object>();
+            try
+            {
+                Dictionary<string, object> primaryKey = new Dictionary<string, object>();
 
-            var listprimaryKeyName = _database.FindPrimaryKeyName(TableName);
-            primaryKey.Add(listprimaryKeyName[0], key);
-            return _database.FindByPrimaryKey(primaryKey, TableName);
+                var listprimaryKeyName = _database.FindPrimaryKeyName(TableName);
+                primaryKey.Add(listprimaryKeyName[0], key);
+                return _database.FindByPrimaryKey(primaryKey, TableName);
+            }
+            catch(Exception ex)
+            {
+
+            }
+
+            return 0;
         }
 
         //Return number of object are updated 
@@ -52,7 +61,15 @@ namespace DAM.EntityQuery
 
         public override int Add(List<object> listObj)
         {
-            return 0;
+            int result = 0;
+            foreach(var item in listObj)
+            {
+                if(_database.AddObjectToDB(item)>0)
+                {
+                    result += 1;
+                }
+            }
+            return result;
         }
 
         public override int Add(object obj)
@@ -62,12 +79,20 @@ namespace DAM.EntityQuery
 
         public override int Delete(List<object> listObj)
         {
-            return 0;
+            int result = 0;
+            foreach (var item in listObj)
+            {
+                if (_database.DeleteObjectInDB(item) > 0)
+                {
+                    result += 1;
+                }
+            }
+            return result;
         }
 
         public override int Delete(object obj)
         {
-            return 0;
+            return _database.DeleteObjectInDB(obj);
         }
     }
 }

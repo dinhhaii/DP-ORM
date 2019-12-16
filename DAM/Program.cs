@@ -14,7 +14,7 @@ namespace DAM
         static void Main(string[] args)
         {
            
-            string connectionString = @"Data Source=DESKTOP-8JKPIIU\SQLEXPRESS2017;Initial Catalog=Dam;Integrated Security=True";
+            string connectionString = @"Data Source=ADMIN\SQLEXPRESS;Initial Catalog=Dam;Integrated Security=True";
             IDatabase sqlDatabase = new SqlClientDB(connectionString);
             //List<ForeignKey> foreignKeys = sqlDatabase.FindForeignKeyOfTable("Client");
             SqlDAMEntity sqlDAMEntity = new SqlDAMEntity(sqlDatabase, "Client");
@@ -22,8 +22,7 @@ namespace DAM
             Dictionary<string, object> pk = new Dictionary<string, object>();
             pk.Add("Id", 3);
             Client client = sqlDAMEntity.FindById(1) as Client;
-            client.Username = "Test";
-            sqlDAMEntity.Update(client);
+            sqlDAMEntity.Delete(client);
             Client clientAdd = new Client();
             clientAdd.Username = "Nguyen Duy Hau";
             clientAdd.Password = "1";
