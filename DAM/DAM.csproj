@@ -48,10 +48,10 @@
     <Compile Include="AttributeEntity\PrimaryKey.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\OracleClientDB.cs" />
-    <Compile Include="DataTable.cs" />
-    <Compile Include="EntityQuery\DAMEntity.cs" />
-    <Compile Include="EntityQuery\OracleDAMEntity.cs" />
-    <Compile Include="EntityQuery\SqlDAMEntity.cs" />
+    <Compile Include="GroupTable.cs" />
+    <Compile Include="DAMEntity\DAMEntity.cs" />
+    <Compile Include="DAMEntity\OracleDAMEntity.cs" />
+    <Compile Include="DAMEntity\SqlDAMEntity.cs" />
     <Compile Include="Entity\Client.cs" />
     <Compile Include="Entity\Information.cs" />
     <Compile Include="Entity\Organization.cs" />

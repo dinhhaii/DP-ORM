@@ -317,6 +317,7 @@ namespace DAM
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                 }
 
                 query.Insert(tableName).Values(valueAdd);
@@ -540,22 +541,29 @@ namespace DAM
             return result;
         }
 
-        public DataTable GroupWithCondition(string tableName, string selectClause, string whereClause, string groupByClause, string havingClause)
+        // Test (not use)
+        public GroupTable GroupRows(string tableName, string groupedColumns)
         {
-            DataTable result = new DataTable();
+            GroupTable result = new GroupTable();
 
             using (connection = new SqlConnection(connectionString))
             {
-                Query query = SqlClientQuery.InitQuery().Select(selectClause).From(tableName).Where(whereClause).GroupBy(groupByClause).Having(havingClause);
+                Query query = SqlClientQuery.InitQuery().Select(groupedColumns).From(tableName).GroupBy(groupedColumns);
                 SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
-                string[] colNamesArray = selectClause.Split(',');
+                string[] colNamesArray = groupedColumns.Split(',');
                 List<string> colNamesList = new List<string>();
+                string groupTableName = "";
                 foreach (var columnName in colNamesArray)
                 {
                     colNamesList.Add(columnName.Trim());
+                    if (columnName != colNamesArray.Last())
+                    {
+                        groupTableName += columnName.Trim() + "_";
+                    }
                 }
 
                 result.columnsName = colNamesList;
+                result._tableName = groupTableName;
 
                 try
                 {

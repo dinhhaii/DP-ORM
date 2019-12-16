@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAM.EntityQuery
+namespace DAM
 {
     public class SqlDAMEntity : DAMEntity
     {
@@ -33,13 +34,12 @@ namespace DAM.EntityQuery
             }
             catch(Exception ex)
             {
-
+                Console.WriteLine(ex.Message);
             }
 
             return 0;
         }
 
-        //Return number of object are updated 
         public override int Update(List<object> listObj)
         {
             int result = 0;
@@ -93,6 +93,53 @@ namespace DAM.EntityQuery
         public override int Delete(object obj)
         {
             return _database.DeleteObjectInDB(obj);
+        }
+
+        public override GroupTable Group(params string[] groupedColumnNames)
+        {
+            List<object> table = _database.GenerateListFromTable(TableName);
+            GroupTable result = new GroupTable();
+            string groupedTableName = "";
+            List<string> columnsName = new List<string>();
+
+            foreach(string columnName in groupedColumnNames)
+            {
+                if (columnName == groupedColumnNames.Last())
+                    groupedTableName += columnName + "_Group";
+                else
+                    groupedTableName += columnName + "_";
+
+                columnsName.Add(columnName);
+            }
+
+            result.columnsName = columnsName;
+            result._tableName = groupedTableName;
+
+            string typeName = string.Format("{0}.Entity.{1}", typeof(SqlDAMEntity).Namespace, TableName);
+            Type entityType = Type.GetType(typeName);
+            PropertyInfo[] properties = entityType.GetProperties();
+
+            //Remove properties aren't grouped
+            foreach(PropertyInfo property in properties)
+            {
+                if (!groupedColumnNames.Contains(property.Name))
+                {
+                    properties = properties.Where(p => p != property).ToArray();
+                }
+            }
+
+            //Save all objects are grouped to DataTable
+            foreach (object obj in table)
+            {
+                Dictionary<string, object> row = new Dictionary<string, object>();
+                foreach (PropertyInfo property in properties)
+                {
+                    row.Add(property.Name, property.GetValue(obj));
+                }
+                result.AddRow(row);
+            }
+
+            return result;
         }
     }
 }
