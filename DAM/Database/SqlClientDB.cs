@@ -428,23 +428,26 @@ namespace DAM
                 Query query = SqlClientQuery.InitQuery(queryString);
                 SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
 
-                try
+                using (connection = new SqlConnection(connectionString))
                 {
-                    connection.Open();
-                    SqlDataReader reader = sqlCommand.ExecuteReader();
-
-                    while (reader.Read())
+                    try
                     {
-                        for (int i = 0; i < reader.FieldCount; i++)
+                        connection.Open();
+                        SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                        while (reader.Read())
                         {
-                            result.Add((string)reader.GetValue(i));
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                result.Add((string)reader.GetValue(i));
+                            }
                         }
+                        reader.Close();
                     }
-                    reader.Close();
-                }
-                catch (Exception e)
-                {
-                    Console.Write(e.Message);
+                    catch (Exception e)
+                    {
+                        Console.Write(e.Message);
+                    }
                 }
             }
 
