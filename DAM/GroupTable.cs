@@ -16,11 +16,11 @@ namespace DAM
             dataTable = new List<Dictionary<string, object>>();
             columnsName = new List<string>();
         }
-        public GroupTable(string tableName)
+        public GroupTable(GroupTable groupTable)
         {
-            _tableName = tableName;
-            dataTable = new List<Dictionary<string, object>>();
-            columnsName = new List<string>();
+            dataTable = groupTable.dataTable;
+            columnsName = groupTable.columnsName;
+            _tableName = groupTable._tableName;
         }
 
         public List<object> GetColumn(string name)
@@ -40,10 +40,7 @@ namespace DAM
             {
                 row.Add(columnsName[i], values[i]);
             }
-            if (!dataTable.Contains(row))
-            {
-                dataTable.Add(row);
-            }
+            AddRow(row);
         }
 
         public void AddRow(Dictionary<string, object> row)
@@ -94,5 +91,259 @@ namespace DAM
 
             return result;
         }
+
+        public GroupTable Count(string colName)
+        {
+            string tableName = string.Format("COUNT({0})", colName);
+            if (columnsName.Contains(colName)) columnsName.Remove(colName);
+
+            foreach (string name in columnsName)
+            {
+                if (name != columnsName.Last()) tableName += name + "_";
+                else tableName += name + "_Group";
+            }
+
+            _tableName = tableName;
+            columnsName.Add("Count");
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Add("Count", 1);
+            }
+
+            for (int i = 0; i < dataTable.Count - 1; i++)
+            {
+                for (int j = i + 1; j < dataTable.Count; j++)
+                {
+                    bool isEqual = true;
+                    foreach (string name in columnsName)
+                    {
+                        if (!DeepEquals(dataTable[i][name], dataTable[j][name]))
+                        {
+                            isEqual = false;
+                            break;
+                        }
+                    }
+
+                    if (isEqual)
+                    {
+                        dataTable.RemoveAt(j);
+                        dataTable[i]["Count"] = Convert.ToInt32(dataTable[i]["Count"]) + 1;
+                        j--;
+                    }
+                }
+            }
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Remove(colName);
+            }
+
+            return this;
+        }
+
+        public GroupTable Average(string colName)
+        {
+            string tableName = string.Format("AVERAGE({0})", colName);
+            if (columnsName.Contains(colName)) columnsName.Remove(colName);
+
+            foreach (string name in columnsName)
+            {
+                if (name != columnsName.Last()) tableName += name + "_";
+                else tableName += name + "_Group";
+            }
+
+            _tableName = tableName;
+            columnsName.Add("Average");
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Add("Sum", row[colName]);
+                row.Add("Count", 1);
+            }
+
+            for (int i = 0; i < dataTable.Count - 1; i++)
+            {
+                for (int j = i + 1; j < dataTable.Count; j++)
+                {
+                    bool isEqual = true;
+                    foreach (string name in columnsName)
+                    {
+                        if (!DeepEquals(dataTable[i][name], dataTable[j][name]))
+                        {
+                            isEqual = false;
+                            break;
+                        }
+                    }
+
+                    if (isEqual)
+                    {
+                        dataTable[i]["Count"] = Convert.ToInt32(dataTable[i]["Count"]) + 1;
+                        dataTable[i]["Sum"] = Convert.ToDouble(dataTable[i]["Sum"]) + Convert.ToDouble(dataTable[j][colName]);
+                        dataTable.RemoveAt(j);
+                        j--;
+                    }
+                }
+            }
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Add("Average", Convert.ToDouble(row["Sum"]) / Convert.ToDouble(row["Count"]));
+                row.Remove(colName);
+                row.Remove("Sum");
+                row.Remove("Count");
+            }
+
+            return this;
+        }
+
+        public GroupTable Sum(string colName)
+        {
+            string tableName = string.Format("SUM({0})", colName);
+            if (columnsName.Contains(colName)) columnsName.Remove(colName);
+
+            foreach (string name in columnsName)
+            {
+                if (name != columnsName.Last()) tableName += name + "_";
+                else tableName += name + "_Group";
+            }
+
+            _tableName = tableName;
+            columnsName.Add("Sum");
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Add("Sum", row[colName]);
+            }
+
+            for (int i = 0; i < dataTable.Count - 1; i++)
+            {
+                for (int j = i + 1; j < dataTable.Count; j++)
+                {
+                    bool isEqual = true;
+                    foreach (string name in columnsName)
+                    {
+                        if (!DeepEquals(dataTable[i][name], dataTable[j][name]))
+                        {
+                            isEqual = false;
+                            break;
+                        }
+                    }
+
+                    if (isEqual)
+                    {
+                        dataTable[i]["Sum"] = Convert.ToDouble(dataTable[i]["Sum"]) + Convert.ToDouble(dataTable[j][colName]);
+                        dataTable.RemoveAt(j);
+                        j--;
+                    }
+                }
+            }
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Remove(colName);
+            }
+            return this;
+
+        }
+
+        public GroupTable Min(string colName)
+        {
+            string tableName = string.Format("MIN({0})", colName);
+            if (columnsName.Contains(colName)) columnsName.Remove(colName);
+
+            foreach (string name in columnsName)
+            {
+                if (name != columnsName.Last()) tableName += name + "_";
+                else tableName += name + "_Group";
+            }
+
+            _tableName = tableName;
+            columnsName.Add("Min");
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Add("Min", row[colName]);
+            }
+
+            for (int i = 0; i < dataTable.Count - 1; i++)
+            {
+                for (int j = i + 1; j < dataTable.Count; j++)
+                {
+                    bool isEqual = true;
+                    foreach (string name in columnsName)
+                    {
+                        if (!DeepEquals(dataTable[i][name], dataTable[j][name]))
+                        {
+                            isEqual = false;
+                            break;
+                        }
+                    }
+
+                    if (isEqual)
+                    {
+                        dataTable[i]["Min"] = Convert.ToInt32(dataTable[i]["Min"]) > Convert.ToInt32(dataTable[j][colName]) ? dataTable[j][colName] : dataTable[i]["Min"];
+                        dataTable.RemoveAt(j);
+                        j--;
+                    }
+                }
+            }
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Remove(colName);
+            }
+            return this;
+        }
+
+        public GroupTable Max(string colName)
+        {
+            string tableName = string.Format("MAX({0})", colName);
+            if (columnsName.Contains(colName)) columnsName.Remove(colName);
+
+            foreach (string name in columnsName)
+            {
+                if (name != columnsName.Last()) tableName += name + "_";
+                else tableName += name + "_Group";
+            }
+
+            _tableName = tableName;
+            columnsName.Add("Max");
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Add("Max", row[colName]);
+            }
+
+            for (int i = 0; i < dataTable.Count - 1; i++)
+            {
+                for (int j = i + 1; j < dataTable.Count; j++)
+                {
+                    bool isEqual = true;
+                    foreach (string name in columnsName)
+                    {
+                        if (!DeepEquals(dataTable[i][name], dataTable[j][name]))
+                        {
+                            isEqual = false;
+                            break;
+                        }
+                    }
+
+                    if (isEqual)
+                    {
+                        dataTable[i]["Max"] = Convert.ToInt32(dataTable[i]["Max"]) < Convert.ToInt32(dataTable[j][colName]) ? dataTable[j][colName] : dataTable[i]["Max"];
+                        dataTable.RemoveAt(j);
+                        j--;
+                    }
+                }
+            }
+
+            foreach (Dictionary<string, object> row in dataTable)
+            {
+                row.Remove(colName);
+            }
+            return this;
+        }
+
     }
 }

@@ -9,9 +9,9 @@ namespace DAM
 {
     public class SqlDAMEntity : DAMEntity
     {
-        public SqlDAMEntity(IDatabase database, string tableName) :base(database,tableName)
+        public SqlDAMEntity(IDatabase database, string tableName) : base(database, tableName)
         {
-            
+
         }
         public SqlDAMEntity(IDatabase database) : base(database)
         {
@@ -32,7 +32,7 @@ namespace DAM
                 primaryKey.Add(listprimaryKeyName[0], key);
                 return _database.FindByPrimaryKey(primaryKey, TableName);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -43,28 +43,28 @@ namespace DAM
         public override int Update(List<object> listObj)
         {
             int result = 0;
-            foreach(var item in listObj)
+            foreach (var item in listObj)
             {
-               if(_database.UpdateObjectToDB(item)>0)
-               {
+                if (_database.UpdateObjectToDB(item) > 0)
+                {
                     result += 1;
-               }
+                }
 
             }
             return result;
         }
 
         public override object Update(object obj)
-        {           
+        {
             return _database.UpdateObjectToDB(obj); ;
         }
 
         public override int Add(List<object> listObj)
         {
             int result = 0;
-            foreach(var item in listObj)
+            foreach (var item in listObj)
             {
-                if(_database.AddObjectToDB(item)>0)
+                if (_database.AddObjectToDB(item) > 0)
                 {
                     result += 1;
                 }
@@ -102,7 +102,7 @@ namespace DAM
             string groupedTableName = "";
             List<string> columnsName = new List<string>();
 
-            foreach(string columnName in groupedColumnNames)
+            foreach (string columnName in groupedColumnNames)
             {
                 if (columnName == groupedColumnNames.Last())
                     groupedTableName += columnName + "_Group";
@@ -120,7 +120,7 @@ namespace DAM
             PropertyInfo[] properties = entityType.GetProperties();
 
             //Remove properties aren't grouped
-            foreach(PropertyInfo property in properties)
+            foreach (PropertyInfo property in properties)
             {
                 if (!groupedColumnNames.Contains(property.Name))
                 {
@@ -140,6 +140,76 @@ namespace DAM
             }
 
             return result;
+        }
+
+        public override GroupTable Count(string columnName, params string[] groupedColumnNames)
+        {
+            string[] concat = new string[groupedColumnNames.Length + 1];
+            concat[0] = columnName;
+            if (groupedColumnNames != null && groupedColumnNames.Length != 0)
+            {
+                groupedColumnNames.CopyTo(concat, 1);
+            }
+
+            GroupTable group = Group(concat);
+            group.Count(columnName);
+            return group;
+        }
+
+        public override GroupTable Average(string columnName, params string[] groupedColumnNames)
+        {
+            string[] concat = new string[groupedColumnNames.Length + 1];
+            concat[0] = columnName;
+            if (groupedColumnNames != null && groupedColumnNames.Length != 0)
+            {
+                groupedColumnNames.CopyTo(concat, 1);
+            }
+
+            GroupTable group = Group(concat);
+            group.Average(columnName);
+            return group;
+        }
+
+        public override GroupTable Sum(string columnName, params string[] groupedColumnNames)
+        {
+            string[] concat = new string[groupedColumnNames.Length + 1];
+            concat[0] = columnName;
+            if (groupedColumnNames != null && groupedColumnNames.Length != 0)
+            {
+                groupedColumnNames.CopyTo(concat, 1);
+            }
+
+            GroupTable group = Group(concat);
+            group.Sum(columnName);
+            return group;
+        }
+
+        public override GroupTable Min(string columnName, params string[] groupedColumnNames)
+        {
+            string[] concat = new string[groupedColumnNames.Length + 1];
+            concat[0] = columnName;
+            if (groupedColumnNames != null && groupedColumnNames.Length != 0)
+            {
+                groupedColumnNames.CopyTo(concat, 1);
+            }
+
+            GroupTable group = Group(concat);
+            group.Min(columnName);
+            return group;
+        }
+
+        public override GroupTable Max(string columnName, params string[] groupedColumnNames)
+        {
+            string[] concat = new string[groupedColumnNames.Length + 1];
+            concat[0] = columnName;
+            if (groupedColumnNames != null && groupedColumnNames.Length != 0)
+            {
+                groupedColumnNames.CopyTo(concat, 1);
+            }
+
+            GroupTable group = Group(concat);
+            group.Max(columnName);
+            return group;
         }
     }
 }

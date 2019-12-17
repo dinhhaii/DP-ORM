@@ -62,5 +62,30 @@ namespace DAM
         {
             throw new NotImplementedException();
         }
+
+        public override GroupTable Count(string columnName, params string[] groupedColumnNames)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GroupTable Average(string columnName, params string[] groupedColumnNames)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GroupTable Sum(string columnName, params string[] groupedColumnNames)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GroupTable Min(string columnName, params string[] groupedColumnNames)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override GroupTable Max(string columnName, params string[] groupedColumnNames)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

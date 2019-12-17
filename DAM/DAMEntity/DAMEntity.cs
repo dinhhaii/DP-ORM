@@ -42,5 +42,12 @@ namespace DAM
         public abstract int Delete(object obj);
 
         public abstract GroupTable Group(params string[] groupedColumnNames);
+
+        public abstract GroupTable Count(string columnName ,params string[] groupedColumnNames);
+        public abstract GroupTable Average(string columnName, params string[] groupedColumnNames);
+        public abstract GroupTable Sum(string columnName, params string[] groupedColumnNames);
+        public abstract GroupTable Min(string columnName, params string[] groupedColumnNames);
+        public abstract GroupTable Max(string columnName, params string[] groupedColumnNames);
+
     }
 }

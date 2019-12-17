@@ -30,7 +30,7 @@ namespace DAM
             //sqlDAMEntity.Add(clientAdd);
             //List<object> list = sqlDatabase.GenerateListFromTable("Client");
             //List<object> list1 = sqlDatabase.GenerateListFromTable("Client");
-            GroupTable grouptable = sqlDAMEntity.Group("team", "Id");
+            GroupTable grouptable = sqlDAMEntity.Min("Id", "team");
 
             Console.WriteLine("HELLO");
             Console.ReadKey();
