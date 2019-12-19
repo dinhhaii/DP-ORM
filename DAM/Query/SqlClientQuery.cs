@@ -59,7 +59,7 @@ namespace DAM
             queryString += string.Format("SET ");
             foreach (var item in valueUpdate)
             {
-                if (item.Key != null && item.Value != DBNull.Value)
+                if (item.Key != null && item.Value != DBNull.Value/* &&item.Value!=null*/)
                 {
                     queryString += item.Value.GetType() == typeof(string) ? string.Format("{0} = '{1}' ", item.Key, item.Value) : string.Format("{0} = {1} ", item.Key, item.Value);
                     if (!item.Equals(valueUpdate.Last()))

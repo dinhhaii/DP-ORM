@@ -210,18 +210,36 @@ namespace DAM
                 tableName = attr.ToString();
             }
             List<string> columnName = getColumnnameTable(tableName);
+            var foreignKey = FindForeignKeyOfTable(tableName);
 
             foreach (PropertyInfo property in properties)
             {
                 object propertyValue = obj.GetType().GetProperty(property.Name).GetValue(obj, null);
+                bool isHave = false;
                 foreach (var item in columnName)
                 {
                     if (item == property.Name)
                     {
                         valueUpdate.Add(property.Name, propertyValue);
+                        isHave = true;
                     }
                 }
+                if (isHave == false)
+                {
 
+                    foreach (var foreign in foreignKey)
+                    {
+                        if (obj.GetType().GetProperty(property.Name).GetValue(obj, null) != null)
+                        {
+                            var foreignKeyValue = obj.GetType().GetProperty(property.Name).GetValue(obj, null);
+                            var h = foreignKeyValue.GetType().Name;
+                            if (foreignKeyValue.GetType().Name == foreign.refTableName)
+                            {
+                                valueUpdate.Add(foreign.foreignKeys[0], foreignKeyValue.GetType().GetProperty(foreign.primaryKeysOfRefTable[0]).GetValue(foreignKeyValue, null));
+                            }
+                        }
+                    }
+                }
             }
             using (connection = new SqlConnection(connectionString))
             {
@@ -276,21 +294,41 @@ namespace DAM
                 tableName = attr.ToString();
             }
             List<string> columnName = getColumnnameTable(tableName);
-            List<string> foreignKeyName = getColumnForeignKeyNameOfTable(tableName);
+            var foreignKey = FindForeignKeyOfTable(tableName);
+
             foreach (PropertyInfo property in properties)
             {
                 object propertyValue = obj.GetType().GetProperty(property.Name).GetValue(obj, null);
+                bool isHave = false;
                 foreach (var item in columnName)
                 {
                     if (item == property.Name)
                     {
                         valueAdd.Add(property.Name, propertyValue);
-                    }
+                        isHave = true;
+                    } 
+                }
+                if(isHave==false)
+                {
+
+                        foreach (var foreign in foreignKey)
+                        {
+                            if (obj.GetType().GetProperty(property.Name).GetValue(obj, null) != null)
+                            {
+                                var foreignKeyValue = obj.GetType().GetProperty(property.Name).GetValue(obj, null);
+                                var h = foreignKeyValue.GetType().Name;
+                                if (foreignKeyValue.GetType().Name == foreign.refTableName)
+                                {
+                                valueAdd.Add(foreign.foreignKeys[0], foreignKeyValue.GetType().GetProperty(foreign.primaryKeysOfRefTable[0]).GetValue(foreignKeyValue, null));
+                                }
+                            }
+                        }
                 }
 
             }
-            using (connection = new SqlConnection(connectionString))
+            using (var connection1 = new SqlConnection(connectionString))
             {
+         
                 Query query = SqlClientQuery.InitQuery();
                 var conditionValue = FindPrimaryKeyName(tableName);
 
@@ -306,6 +344,7 @@ namespace DAM
                 }
                 try
                 {
+                    List<string> foreignKeyName = getColumnForeignKeyNameOfTable(tableName);
                     foreach (var item in foreignKeyName)
                     {
                         if (valueAdd.ContainsKey(item) && (int)valueAdd[item] == 0)
@@ -317,11 +356,10 @@ namespace DAM
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.Message );
                 }
 
                 query.Insert(tableName).Values(valueAdd);
-                var connection1 = new SqlConnection(connectionString);
                 SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection1);
                 connection1.Open();
                 result = sqlCommand.ExecuteNonQuery();
