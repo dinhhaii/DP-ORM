@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using DAM.Entity;
 using System.Reflection;
+using DAM.Factory;
 
 namespace DAM
 {
@@ -16,9 +17,9 @@ namespace DAM
            
             string hauConnectionString = @"Data Source=ADMIN\SQLEXPRESS;Initial Catalog=Dam;Integrated Security=True";
             //string haiConnectionString = @"Data Source=.\sqlexpress;Initial Catalog=dam;Integrated Security=True";
-            IDatabase database = new SqlClientDB(hauConnectionString);
+            IDatabase database = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDatabase(hauConnectionString);
 
-            SqlDAMEntity sqlDAMEntity = new SqlDAMEntity(database, "Client");
+            DAMEntity sqlDAMEntity = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDAMEntity(database, "Client");
 
             //Dictionary<string, object> pk = new Dictionary<string, object>();
             //pk.Add("Id", 3);
@@ -29,7 +30,7 @@ namespace DAM
             organization.Id = 1;
             Team team = new Team();
             team.Id = 1;
-            client.Username = "Nguyen Duy Hau hehe";
+            client.Username = "Nguyen Duy Hau DepTrai";
             client.Password = "12";
             client.organization = organization;
             client.team = team;

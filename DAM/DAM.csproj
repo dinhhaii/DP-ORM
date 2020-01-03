@@ -46,8 +46,14 @@
     <Compile Include="AttributeEntity\Table.cs" />
     <Compile Include="AttributeEntity\OneToOne.cs" />
     <Compile Include="AttributeEntity\PrimaryKey.cs" />
+    <Compile Include="DatabaseType.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\OracleClientDB.cs" />
+    <Compile Include="Factory\DAMAbstractFactory.cs" />
+    <Compile Include="Factory\DAMFactory.cs" />
+    <Compile Include="Factory\OleDBFactory.cs" />
+    <Compile Include="Factory\OracleFactory.cs" />
+    <Compile Include="Factory\SqlClientFactory.cs" />
     <Compile Include="GroupTable.cs" />
     <Compile Include="DAMEntity\DAMEntity.cs" />
     <Compile Include="DAMEntity\OracleDAMEntity.cs" />

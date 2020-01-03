@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAM
 {
-    interface Query
+    public interface Query
     {
         Query Select(string property);
         Query From(string property);
