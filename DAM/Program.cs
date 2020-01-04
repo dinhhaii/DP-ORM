@@ -14,10 +14,11 @@ namespace DAM
     {
         static void Main(string[] args)
         {
-           
+            string thanhhaiConnectionString = @"Data Source=DESKTOP-2GTF1EB\SQLEXPRESS; Initial Catalog = dam; Integrated Security = True";
             string hauConnectionString = @"Data Source=ADMIN\SQLEXPRESS;Initial Catalog=Dam;Integrated Security=True";
             //string haiConnectionString = @"Data Source=.\sqlexpress;Initial Catalog=dam;Integrated Security=True";
-            IDatabase database = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDatabase(hauConnectionString);
+            //IDatabase database = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDatabase(hauConnectionString);
+            IDatabase database = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDatabase(thanhhaiConnectionString);
 
             DAMEntity sqlDAMEntity = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDAMEntity(database, "Client");
 
@@ -34,10 +35,11 @@ namespace DAM
             client.Password = "12";
             client.organization = organization;
             client.team = team;
-            sqlDAMEntity.Update(client);
+            //sqlDAMEntity.Update(client);
             //List<object> list = sqlDatabase.GenerateListFromTable("Client");
             //List<object> list1 = sqlDatabase.GenerateListFromTable("Client");
             //GroupTable grouptable = sqlDAMEntity.Min("Id", "team");
+            
 
             Console.WriteLine("HELLO");
             Console.ReadKey();

@@ -11,9 +11,13 @@ namespace DAM.Entity
     class Team
     {
         [PrimaryKey]
+        [Column]
         public long Id { get; set; }
-        [PrimaryKey]
+
+        [Column]
         public string Name { get; set; }
 
+        [OneToMany(refClassType:typeof(Client),mappedBy:"team")]
+        public List<object> Clients { get; set; }
     }
 }

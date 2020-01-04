@@ -43,12 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributeEntity\Column.cs" />
+    <Compile Include="AttributeEntity\JoinColumn.cs" />
+    <Compile Include="AttributeEntity\ManyToOne.cs" />
+    <Compile Include="AttributeEntity\OneToMany.cs" />
     <Compile Include="AttributeEntity\Table.cs" />
     <Compile Include="AttributeEntity\OneToOne.cs" />
     <Compile Include="AttributeEntity\PrimaryKey.cs" />
     <Compile Include="DatabaseType.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\OracleClientDB.cs" />
+    <Compile Include="Entity\ClientDetail.cs" />
     <Compile Include="Factory\DAMAbstractFactory.cs" />
     <Compile Include="Factory\DAMFactory.cs" />
     <Compile Include="Factory\OleDBFactory.cs" />

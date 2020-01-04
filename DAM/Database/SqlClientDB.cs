@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-
+using DAM.AttributeEntity;
 namespace DAM
 {
     class SqlClientDB : IDatabase
@@ -133,6 +133,350 @@ namespace DAM
                     while (reader.Read())
                     {
                         object entity = Activator.CreateInstance(entityType);
+                        object id = null;
+                        //Get each record and save to 'entity'
+                        foreach (PropertyInfo property in properties)
+                        {
+                            if (Attribute.IsDefined(property, typeof(Column)))
+                            {
+                                object propertyReader = reader[property.Name];
+                                if (Attribute.IsDefined(property, typeof(PrimaryKey)))
+                                    id = propertyReader;
+                                PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                if (null != propEntity && propEntity.CanWrite)
+                                {
+                                    if (propertyReader.GetType() == typeof(string))
+                                    {
+                                        propEntity.SetValue(entity, (propertyReader as string).Trim(), null);
+                                    }
+                                    else
+                                    {
+                                        propEntity.SetValue(entity, propertyReader, null);
+                                    }
+                                }
+
+                            }
+                            else if ((Attribute.IsDefined(property, typeof(ManyToOne))
+                                || Attribute.IsDefined(property, typeof(OneToOne)) &&
+                                Attribute.IsDefined(property, typeof(JoinColumn))))
+                            {
+                                Dictionary<string, object> pKey = new Dictionary<string, object>();
+                                foreach (ForeignKey fk in FK)
+                                {
+                                    if (fk.refTableName == property.PropertyType.Name)
+                                    {
+                                        for (int i = 0; i < fk.foreignKeys.Count; i++)
+                                        {
+                                            string pkRefTable = fk.primaryKeysOfRefTable[i];
+                                            string fkTable = fk.foreignKeys[i];
+                                            if (reader[fkTable] == null)
+                                            {
+                                                throw new Exception("Foreign key must be set a value!");
+                                            }
+                                            pKey.Add(pkRefTable, reader[fkTable]);
+                                        }
+
+                                        object obj = FindByPrimaryKey(pKey, fk.refTableName);
+                                        PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                        if (null != propEntity && propEntity.CanWrite)
+                                        {
+                                            propEntity.SetValue(entity, obj, null);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (Attribute.IsDefined(property, typeof(OneToOne)) &&
+                                !Attribute.IsDefined(property, typeof(JoinColumn)))
+                            {
+                                var attr = (OneToOne)property.GetCustomAttribute(typeof(OneToOne));
+                                if (attr == null) continue;
+                                var type = attr.refClassType;
+                                string refTableName = "";
+                                var info = type.GetTypeInfo().GetCustomAttribute(typeof(Table)) as Table;
+                                if (info != null)
+                                {
+                                    refTableName = info.ToString();
+                                    List<ForeignKey> refFK = FindForeignKeyOfTable(refTableName);
+                                    refFK = refFK.Where(e => e.refTableName.Equals(tableName)).ToList<ForeignKey>();
+                                    if (refFK.Count > 0 && refFK[0].foreignKeys.Count > 0)
+                                    {
+                                        Dictionary<string, object> keyValuePairs = new Dictionary<string, object>();
+                                        keyValuePairs.Add(refFK[0].foreignKeys[0], id);
+                                        List<object> list = findByKeyValues(keyValuePairs, refTableName, new List<string>());
+                                        PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                        if (list.Count > 0) propEntity.SetValue(entity, list[0], null);
+                                        propEntity = type.GetProperty(attr.mappedBy, BindingFlags.Public | BindingFlags.Instance);
+                                        foreach (var item in list)
+                                        {
+                                            propEntity.SetValue(item, entity);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (Attribute.IsDefined(property, typeof(OneToMany)))
+                            {
+                                var attr = (OneToMany)property.GetCustomAttribute(typeof(OneToMany));
+                                if (attr == null) continue;
+                                var type = attr.refClassType;
+                                string refTableName = "";
+                                var info = type.GetTypeInfo().GetCustomAttribute(typeof(Table)) as Table;
+                                if (info != null)
+                                {
+                                    refTableName = info.ToString();
+                                    List<ForeignKey> refFK = FindForeignKeyOfTable(refTableName);
+                                    refFK = refFK.Where(e => e.refTableName.Equals(tableName)).ToList<ForeignKey>();
+                                    if (refFK.Count > 0 && refFK[0].foreignKeys.Count > 0)
+                                    {
+                                        Dictionary<string, object> keyValuePairs = new Dictionary<string, object>();
+                                        keyValuePairs.Add(refFK[0].foreignKeys[0], id);
+                                        List<object> list = findByKeyValues(keyValuePairs, refTableName, new List<string>());
+                                        PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                        if (list.Count > 0) propEntity.SetValue(entity, list, null);
+                                        propEntity = type.GetProperty(attr.mappedBy, BindingFlags.Public | BindingFlags.Instance);
+                                        foreach (var item in list)
+                                        {
+                                            propEntity.SetValue(item, entity);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return entity;
+                    }
+                    reader.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.Write(e.Message);
+                }
+            }
+
+            return null;
+        }
+
+        public List<object> findByKeyValues(Dictionary<string, object> primaryKeys, string tableName, List<string> checkedTables)
+        {
+            string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
+            Type entityType = Type.GetType(typeName);
+            PropertyInfo[] properties = entityType.GetProperties();
+            List<object> results = new List<object>();
+
+            if (checkedTables.Contains(tableName)) return results;
+            checkedTables.Add(tableName);
+            using (connection = new SqlConnection(connectionString))
+            {
+                Query query = SqlClientQuery.InitQuery();
+
+                if (primaryKeys != null)
+                {
+                    string condition = "";
+                    foreach (KeyValuePair<string, object> item in primaryKeys)
+                    {
+                        if (item.Key != null && item.Value != DBNull.Value)
+                        {
+                            condition += item.Value.GetType() == typeof(string) ? string.Format("{0} = '{1}'", item.Key, item.Value) : string.Format("{0} = {1}", item.Key, item.Value);
+                            if (!item.Equals(primaryKeys.Last()))
+                            {
+                                condition += " and ";
+                            }
+                        }
+                    }
+                    if (condition != "")
+                        query = SqlClientQuery.InitQuery().Select("*").From(tableName).Where(condition);
+                }
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
+
+                try
+                {
+                    connection.Open();
+                    List<ForeignKey> FK = FindForeignKeyOfTable(tableName);
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        object entity = Activator.CreateInstance(entityType);
+                        object id = null;
+                        //Get each record and save to 'entity'
+                        foreach (PropertyInfo property in properties)
+                        {
+                            if (Attribute.IsDefined(property, typeof(Column)))
+                            {
+                                object propertyReader = reader[property.Name];
+                                if (Attribute.IsDefined(property, typeof(PrimaryKey)))
+                                    id = propertyReader;
+                                PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                if (null != propEntity && propEntity.CanWrite)
+                                {
+                                    if (propertyReader.GetType() == typeof(string))
+                                    {
+                                        propEntity.SetValue(entity, (propertyReader as string).Trim(), null);
+                                    }
+                                    else
+                                    {
+                                        propEntity.SetValue(entity, propertyReader, null);
+                                    }
+                                }
+
+                            }
+                            else if ((Attribute.IsDefined(property, typeof(ManyToOne))
+                               || Attribute.IsDefined(property, typeof(OneToOne)) &&
+                               Attribute.IsDefined(property, typeof(JoinColumn))))
+                            {
+                                Dictionary<string, object> pKey = new Dictionary<string, object>();
+                                foreach (ForeignKey fk in FK)
+                                {
+                                    if (fk.refTableName == property.PropertyType.Name)
+                                    {
+                                        for (int i = 0; i < fk.foreignKeys.Count; i++)
+                                        {
+                                            string pkRefTable = fk.primaryKeysOfRefTable[i];
+                                            string fkTable = fk.foreignKeys[i];
+                                            if (reader[fkTable] == null)
+                                            {
+                                                throw new Exception("Foreign key must be set a value!");
+                                            }
+                                            pKey.Add(pkRefTable, reader[fkTable]);
+                                        }
+                                        List<object> list = findByKeyValues(pKey, fk.refTableName, checkedTables);
+                                        if (list.Count > 0)
+                                        {
+                                            PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                            if (null != propEntity && propEntity.CanWrite)
+                                            {
+                                                propEntity.SetValue(entity, list[0], null);
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                            else if (Attribute.IsDefined(property, typeof(OneToOne)) &&
+                                !Attribute.IsDefined(property, typeof(JoinColumn)))
+                            {
+                                var attr = (OneToOne)property.GetCustomAttribute(typeof(OneToOne));
+                                if (attr == null) continue;
+                                var type = attr.refClassType;
+                                string refTableName = "";
+                                var info = type.GetTypeInfo().GetCustomAttribute(typeof(Table)) as Table;
+                                if (info != null)
+                                {
+                                    refTableName = info.ToString();
+                                    List<ForeignKey> refFK = FindForeignKeyOfTable(refTableName);
+                                    refFK = refFK.Where(e => e.refTableName.Equals(tableName)).ToList<ForeignKey>();
+                                    if (refFK.Count > 0 && refFK[0].foreignKeys.Count > 0)
+                                    {
+                                        Dictionary<string, object> keyValuePairs = new Dictionary<string, object>();
+                                        keyValuePairs.Add(refFK[0].foreignKeys[0], id);
+
+                                        List<object> list = findByKeyValues(keyValuePairs, refTableName, checkedTables);
+                                        PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                        if (list.Count > 0) propEntity.SetValue(entity, list[0], null);
+                                        propEntity = type.GetProperty(attr.mappedBy, BindingFlags.Public | BindingFlags.Instance);
+                                        foreach (var item in list)
+                                        {
+                                            propEntity.SetValue(item, entity);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (Attribute.IsDefined(property, typeof(OneToMany)))
+                            {
+                                var attr = (OneToMany)property.GetCustomAttribute(typeof(OneToMany));
+                                if (attr == null) continue;
+                                var type = attr.refClassType;
+                                string refTableName = "";
+                                var info = type.GetTypeInfo().GetCustomAttribute(typeof(Table)) as Table;
+                                if (info != null)
+                                {
+                                    refTableName = info.ToString();
+                                    List<ForeignKey> refFK = FindForeignKeyOfTable(refTableName);
+                                    refFK = refFK.Where(e => e.refTableName.Equals(tableName)).ToList<ForeignKey>();
+                                    if (refFK.Count > 0 && refFK[0].foreignKeys.Count > 0)
+                                    {
+                                        Dictionary<string, object> keyValuePairs = new Dictionary<string, object>();
+                                        keyValuePairs.Add(refFK[0].foreignKeys[0], id);
+                                        List<object> list = findByKeyValues(keyValuePairs, refTableName, checkedTables);
+                                        PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                        if (list.Count > 0) propEntity.SetValue(entity, list, null);
+                                        propEntity = type.GetProperty(attr.mappedBy, BindingFlags.Public | BindingFlags.Instance);
+                                        foreach (var item in list)
+                                        {
+                                            propEntity.SetValue(item, entity);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        results.Add(entity);
+                    }
+                    reader.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.Write(e.Message);
+                }
+            }
+
+            return results;
+        }
+
+        public List<object> findByObject(object obj)
+        {
+            string tableName = "";
+            var info = obj.GetType().GetTypeInfo().GetCustomAttribute(typeof(Table)) as Table;
+            if (info != null) tableName = info.ToString();
+            List<object> results = new List<object>();
+            string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
+            Type entityType = Type.GetType(typeName);
+            PropertyInfo[] properties = entityType.GetProperties();
+            Dictionary<string, object> keyValuePairs = new Dictionary<string, object>();
+            foreach (PropertyInfo property in properties)
+            {
+                object objValue = property.GetValue(obj);
+                if (Attribute.IsDefined(property, typeof(Column)) && objValue != null)
+                {
+                    keyValuePairs.Add(property.Name, objValue);
+                }
+                else if (Attribute.IsDefined(property, typeof(JoinColumn)) && objValue != null)
+                {
+                    var attr = (JoinColumn)property.GetCustomAttribute(typeof(JoinColumn));
+                    if (attr != null)
+                        keyValuePairs.Add(attr.ToString(), objValue);
+                }
+            }
+
+
+            using (connection = new SqlConnection(connectionString))
+            {
+                Query query = SqlClientQuery.InitQuery();
+
+                if (keyValuePairs.Count > 0)
+                {
+                    string condition = "";
+                    foreach (KeyValuePair<string, object> item in keyValuePairs)
+                    {
+                        if (item.Key != null && item.Value != DBNull.Value)
+                        {
+                            condition += item.Value.GetType() == typeof(string) ? string.Format("{0} = '{1}'", item.Key, item.Value) : string.Format("{0} = {1}", item.Key, item.Value);
+                            if (!item.Equals(keyValuePairs.Last()))
+                            {
+                                condition += " and ";
+                            }
+                        }
+                    }
+                    if (condition != "")
+                        query = SqlClientQuery.InitQuery().Select("*").From(tableName).Where(condition);
+                }
+                SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
+
+                try
+                {
+                    connection.Open();
+                    List<ForeignKey> FK = FindForeignKeyOfTable(tableName);
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        object entity = Activator.CreateInstance(entityType);
                         //Get each record and save to 'entity'
                         foreach (PropertyInfo property in properties)
                         {
@@ -154,11 +498,11 @@ namespace DAM
                                             }
                                             pKey.Add(pkRefTable, reader[fkTable]);
                                         }
-                                        object obj = FindByPrimaryKey(pKey, fk.refTableName);
+                                        object obj2 = FindByPrimaryKey(pKey, fk.refTableName);
                                         PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
                                         if (null != propEntity && propEntity.CanWrite)
                                         {
-                                            propEntity.SetValue(entity, obj, null);
+                                            propEntity.SetValue(entity, obj2, null);
                                         }
 
                                     }
@@ -181,7 +525,7 @@ namespace DAM
                                 }
                             }
                         }
-                        return entity;
+                        results.Add(entity);
                     }
                     reader.Close();
                 }
@@ -191,7 +535,7 @@ namespace DAM
                 }
             }
 
-            return null;
+            return results;
         }
 
         //Update
