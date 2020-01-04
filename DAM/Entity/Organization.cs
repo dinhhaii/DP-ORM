@@ -20,5 +20,8 @@ namespace DAM.Entity
         [OneToMany(refClassType: typeof(Client), mappedBy: "organization")]
         public List<object> client { get; set; }
 
+        [ManyToMany(refClassType:typeof(Team),mappedBy:"organizations")]
+        [JoinTable(name:"Organization_Team",joinColumn:"Organization_Id",refJoinColumn:"Team_Id")]
+        public List<object> teams { get; set; }
     }
 }

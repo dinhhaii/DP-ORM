@@ -240,6 +240,50 @@ namespace DAM
                                     }
                                 }
                             }
+                            else if (Attribute.IsDefined(property, typeof(ManyToMany)) 
+                                && Attribute.IsDefined(property, typeof(JoinTable)))
+                            {
+                                var manyToManyAttr = (ManyToMany)property.GetCustomAttribute(typeof(ManyToMany));
+                                var joinTableAttr = (JoinTable)property.GetCustomAttribute(typeof(JoinTable));
+
+                                if (manyToManyAttr == null || joinTableAttr==null) continue;
+                                var type = manyToManyAttr.refClassType;
+                                string refTableName = "";
+                                string primaryKey = FindPrimaryKeyName(tableName)[0];
+
+                                var info = type.GetTypeInfo().GetCustomAttribute(typeof(Table)) as Table;
+                                if (info != null)
+                                {
+                                    refTableName = info.ToString();
+                                    Dictionary<string, object> keyValuePairs = new Dictionary<string, object>();
+                                    keyValuePairs.Add("_Join Table", joinTableAttr.Name);
+                                    keyValuePairs.Add("_Join On_Column1", primaryKey);
+                                    keyValuePairs.Add("_Join On_Column2", joinTableAttr.RefJoinColumn);
+
+                                    keyValuePairs.Add(joinTableAttr.JoinColumn, id);
+                                    List<object> list = findByKeyValues(keyValuePairs, refTableName, new List<string>());
+                                    
+                                    PropertyInfo propEntity = entityType.GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
+                                        if (list.Count > 0) propEntity.SetValue(entity, list, null);
+                                        propEntity = type.GetProperty(manyToManyAttr.mappedBy, BindingFlags.Public | BindingFlags.Instance);
+                                        foreach (var item in list)
+                                        {
+                                        Dictionary<string, object> keyValuePairs2 = new Dictionary<string, object>();
+                                        string primaryKeyField = findPrimaryField(item);
+                                        object primaryKeyValue = item.GetType().GetProperty(primaryKeyField).GetValue(item, null);
+                                        keyValuePairs2.Add("_Join Table", joinTableAttr.Name);
+                                        keyValuePairs2.Add("_Join On_Column1", primaryKeyField);
+                                        keyValuePairs2.Add("_Join On_Column2", joinTableAttr.JoinColumn);
+                                        keyValuePairs2.Add(joinTableAttr.RefJoinColumn, primaryKeyValue);
+                                        List<object> list2 = findByKeyValues(keyValuePairs2, tableName, new List<string>());
+                      
+                                        propEntity.SetValue(item, list2);
+                                        }
+
+                                }
+
+                            }
+                            
                         }
                         return entity;
                     }
@@ -270,19 +314,36 @@ namespace DAM
                 if (primaryKeys != null)
                 {
                     string condition = "";
+
+                    string joinTable = "";
+                    string joinOnColumn1 = "";
+                    string joinOnColumn2 = "";
                     foreach (KeyValuePair<string, object> item in primaryKeys)
                     {
                         if (item.Key != null && item.Value != DBNull.Value)
                         {
-                            condition += item.Value.GetType() == typeof(string) ? string.Format("{0} = '{1}'", item.Key, item.Value) : string.Format("{0} = {1}", item.Key, item.Value);
-                            if (!item.Equals(primaryKeys.Last()))
+                            if (!item.Key.Contains("_Join"))
                             {
-                                condition += " and ";
+                                condition += item.Value.GetType() == typeof(string) ? string.Format("{0} = '{1}'", item.Key, item.Value) : string.Format("{0} = {1}", item.Key, item.Value);
+                                if (!item.Equals(primaryKeys.Last()))
+                                {
+                                    condition += " and ";
+                                }
+                            }
+                            else
+                            {
+                                if (item.Key.Equals("_Join Table")) joinTable = item.Value.ToString();
+                                else if(item.Key.Equals("_Join On_Column1")) joinOnColumn1 = item.Value.ToString();
+                                else if (item.Key.Equals("_Join On_Column2")) joinOnColumn2 = item.Value.ToString();
+
                             }
                         }
                     }
+                    query = SqlClientQuery.InitQuery().Select("*").From(tableName);
+                    if (joinTable.Length > 0 && joinOnColumn1.Length > 0 && joinOnColumn2.Length>0)
+                        query.InnerJoin(joinTable).On(joinOnColumn1,joinOnColumn2);
                     if (condition != "")
-                        query = SqlClientQuery.InitQuery().Select("*").From(tableName).Where(condition);
+                        query.Where(condition);
                 }
                 SqlCommand sqlCommand = (SqlCommand)query.GenerateCommand(connection);
 
@@ -764,6 +825,18 @@ namespace DAM
                 connection1.Close();
             }
             return result;
+        }
+
+        private string findPrimaryField(object obj)
+        {
+            PropertyInfo[] properties = obj.GetType().GetProperties();
+            foreach(var property in properties)
+            {
+                if(Attribute.IsDefined(property, typeof(PrimaryKey))) {
+                    return property.Name;
+                }
+            }
+            return "";
         }
 
         private List<string> getColumnnameTable(string tableName)
