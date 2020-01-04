@@ -12,6 +12,9 @@ namespace DAM
         Query Select(string property);
         Query From(string property);
         Query Where(string property);
+
+        Query InnerJoin(string property);
+        Query On(string property1, string property2);
         Query Update(string property);
         Query Set(Dictionary<string, object> valueUpdate);
         Query GroupBy(string property);

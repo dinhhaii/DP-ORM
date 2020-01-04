@@ -38,7 +38,19 @@ namespace DAM
 
         public Query From(string table)
         {
-            queryString += string.Format("FROM {0} ", table);
+            queryString += string.Format("FROM {0} _table1 ", table);
+            return this;
+        }
+
+        public Query InnerJoin(string table)
+        {
+            queryString += string.Format("INNER JOIN {0} _table2 ", table);
+            return this;
+        }
+
+        public Query On(string column1,string column2)
+        {
+            queryString += string.Format("ON _table1.{0}=_table2.{1} ", column1,column2);
             return this;
         }
 

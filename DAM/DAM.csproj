@@ -44,8 +44,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributeEntity\Column.cs" />
+    <Compile Include="AttributeEntity\JoinTable.cs" />
     <Compile Include="AttributeEntity\JoinColumn.cs" />
     <Compile Include="AttributeEntity\ManyToOne.cs" />
+    <Compile Include="AttributeEntity\ManyToMany.cs" />
     <Compile Include="AttributeEntity\OneToMany.cs" />
     <Compile Include="AttributeEntity\Table.cs" />
     <Compile Include="AttributeEntity\OneToOne.cs" />
