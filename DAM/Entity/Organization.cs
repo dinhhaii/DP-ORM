@@ -11,7 +11,14 @@ namespace DAM.Entity
     class Organization
     {
         [PrimaryKey]
+        [Column]
         public long Id { get; set; }
+
+        [Column]
         public string Name { get; set; }
+
+        [OneToMany(refClassType: typeof(Client), mappedBy: "organization")]
+        public List<object> client { get; set; }
+
     }
 }
