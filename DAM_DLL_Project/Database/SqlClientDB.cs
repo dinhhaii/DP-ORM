@@ -33,10 +33,31 @@ namespace DAM
                 connection.Close();
             }
         }
+
+        public Type GetTypeByClassName(string className)
+        {
+            Type entityType = null;
+
+            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type[] assemblyTypes = a.GetTypes();
+                for (int j = 0; j < assemblyTypes.Length; j++)
+                {
+                    if (assemblyTypes[j].Name == className)
+                    {
+                        entityType = assemblyTypes[j];
+                    }
+                }
+            }
+            return entityType;
+        }
+
         public List<object> GenerateListFromTable(string tableName)
         {
-            string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
-            Type entityType = Type.GetType(typeName);
+            Type entityType = GetTypeByClassName(tableName);
+
+
+
             PropertyInfo[] properties = entityType.GetProperties();
             List<object> tables = new List<object>();
 
@@ -98,8 +119,8 @@ namespace DAM
 
         public object FindByPrimaryKey(Dictionary<string, object> primaryKeys, string tableName)
         {
-            string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
-            Type entityType = Type.GetType(typeName);
+            Type entityType = GetTypeByClassName(tableName);
+
             PropertyInfo[] properties = entityType.GetProperties();
 
             using (connection = new SqlConnection(connectionString))
@@ -300,8 +321,7 @@ namespace DAM
 
         public List<object> findByKeyValues(Dictionary<string, object> primaryKeys, string tableName, List<string> checkedTables)
         {
-            string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
-            Type entityType = Type.GetType(typeName);
+            Type entityType = GetTypeByClassName(tableName);
             PropertyInfo[] properties = entityType.GetProperties();
             List<object> results = new List<object>();
 
@@ -487,8 +507,7 @@ namespace DAM
             var info = obj.GetType().GetTypeInfo().GetCustomAttribute(typeof(Table)) as Table;
             if (info != null) tableName = info.ToString();
             List<object> results = new List<object>();
-            string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
-            Type entityType = Type.GetType(typeName);
+            Type entityType = GetTypeByClassName(tableName);
             PropertyInfo[] properties = entityType.GetProperties();
             Dictionary<string, object> keyValuePairs = new Dictionary<string, object>();
             foreach (PropertyInfo property in properties)

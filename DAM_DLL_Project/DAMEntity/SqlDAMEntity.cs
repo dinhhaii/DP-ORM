@@ -115,8 +115,7 @@ namespace DAM
             result.columnsName = columnsName;
             result._tableName = groupedTableName;
 
-            string typeName = string.Format("{0}.Entity.{1}", typeof(SqlDAMEntity).Namespace, TableName);
-            Type entityType = Type.GetType(typeName);
+            Type entityType = _database.GetTypeByClassName(TableName);
             PropertyInfo[] properties = entityType.GetProperties();
 
             //Remove properties aren't grouped

@@ -35,7 +35,21 @@ namespace DAM
         }
         public List<object> GenerateListFromTable(string tableName)
         {
-            string typeName = string.Format("{0}.Entity.{1}", typeof(SqlClientDB).Namespace, tableName);
+            List<Type> returnVal = new List<Type>();
+
+            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type[] assemblyTypes = a.GetTypes();
+                for (int j = 0; j < assemblyTypes.Length; j++)
+                {
+                    if (assemblyTypes[j].Name == tableName)
+                    {
+                        returnVal.Add(assemblyTypes[j]);
+                    }
+                }
+            }
+
+            string typeName = Assembly.GetEntryAssembly().GetTypes().ToList().SingleOrDefault(x => x.Name == tableName).FullName;
             Type entityType = Type.GetType(typeName);
             PropertyInfo[] properties = entityType.GetProperties();
             List<object> tables = new List<object>();

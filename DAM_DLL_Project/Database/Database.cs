@@ -8,6 +8,7 @@ namespace DAM
 {
     public interface IDatabase
     {
+        Type GetTypeByClassName(string className);
         List<object> GenerateListFromTable(string tableName);
         object FindByPrimaryKey(Dictionary<string, object> primaryKeys, string tableName);
         List<ForeignKey> FindForeignKeyOfTable(string tableName);
