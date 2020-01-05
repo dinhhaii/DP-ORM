@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAM
 {
-    class SqlClientQuery : Query
+    public class SqlClientQuery : Query
     {
         private string queryString { get; set; }
         private SqlParameter[] sqlParameters { get; set; }

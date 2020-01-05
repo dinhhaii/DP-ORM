@@ -41,20 +41,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributeEntity\Column.cs" />
+    <Compile Include="AttributeEntity\JoinColumn.cs" />
+    <Compile Include="AttributeEntity\JoinTable.cs" />
+    <Compile Include="AttributeEntity\ManyToMany.cs" />
+    <Compile Include="AttributeEntity\ManyToOne.cs" />
+    <Compile Include="AttributeEntity\OneToMany.cs" />
     <Compile Include="AttributeEntity\OneToOne.cs" />
     <Compile Include="AttributeEntity\PrimaryKey.cs" />
     <Compile Include="AttributeEntity\Table.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="DAMEntity\DAMEntity.cs" />
     <Compile Include="DAMEntity\OracleDAMEntity.cs" />
     <Compile Include="DAMEntity\SqlDAMEntity.cs" />
+    <Compile Include="DatabaseType.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\OracleClientDB.cs" />
     <Compile Include="Database\SqlClientDB.cs" />
     <Compile Include="Entity\Client.cs" />
+    <Compile Include="Entity\ClientDetail.cs" />
     <Compile Include="Entity\Information.cs" />
     <Compile Include="Entity\Organization.cs" />
     <Compile Include="Entity\Team.cs" />
+    <Compile Include="Factory\DAMAbstractFactory.cs" />
+    <Compile Include="Factory\DAMFactory.cs" />
+    <Compile Include="Factory\OleDBFactory.cs" />
+    <Compile Include="Factory\OracleFactory.cs" />
+    <Compile Include="Factory\SqlClientFactory.cs" />
     <Compile Include="ForeignKey.cs" />
     <Compile Include="GroupTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

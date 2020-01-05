@@ -17,6 +17,8 @@ namespace DAM
         int UpdateObjectToDB(object obj);
         int AddObjectToDB(object obj);
         int DeleteObjectInDB(object obj);
+        List<object> findByObject(object obj);
+
 
     }
 }

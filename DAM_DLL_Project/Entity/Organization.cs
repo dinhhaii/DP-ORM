@@ -11,7 +11,17 @@ namespace DAM.Entity
     class Organization
     {
         [PrimaryKey]
+        [Column]
         public long Id { get; set; }
+
+        [Column]
         public string Name { get; set; }
+
+        [OneToMany(refClassType: typeof(Client), mappedBy: "organization")]
+        public List<object> client { get; set; }
+
+        [ManyToMany(refClassType:typeof(Team),mappedBy:"organizations")]
+        [JoinTable(name:"Organization_Team",joinColumn:"Organization_Id",refJoinColumn:"Team_Id")]
+        public List<object> teams { get; set; }
     }
 }

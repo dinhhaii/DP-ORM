@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAM.Database
 {
-    class OracleClientDB
+    public class OracleClientDB
     {
     }
 }

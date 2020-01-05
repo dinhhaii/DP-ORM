@@ -10,12 +10,25 @@ namespace DAM.Entity
     [Table("Client")]
     class Client
     {
-        [PrimaryKey] public long Id { get; set; }
+        [PrimaryKey]
+        [Column("Id")]
+        public long Id { get; set; }
+
+        [Column("Username")]
         public string Username { get; set; }
+
+        [Column("Password")]
         public string Password { get; set; }
-        //public int OrganizationId { get; set; }
-        //public int TeamId { get; set; }
-        [OneToOne] public Organization organization { get; set; }
-        [OneToOne] public Team team { get; set; }
+
+        [ManyToOne]
+        [JoinColumn("Id")]
+        public Organization organization { get; set; }
+
+        [ManyToOne]
+        [JoinColumn("teamId")]
+        public Team team { get; set; }
+
+        [OneToOne(refClassType:typeof(ClientDetail),mappedBy:"client")]
+        public ClientDetail clientDetail { get; set; }
     }
 }

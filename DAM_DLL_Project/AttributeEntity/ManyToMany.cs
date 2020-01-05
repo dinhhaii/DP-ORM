@@ -7,18 +7,25 @@ using System.Threading.Tasks;
 namespace DAM.AttributeEntity
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
-    class OneToOne : System.Attribute
+    class ManyToMany : System.Attribute
     {
         public Type refClassType { get; set; }
         public string mappedBy { get; set; }
-        public OneToOne(Type refClassType,string mappedBy) {
+
+        public ManyToMany(Type refClassType, string mappedBy)
+        {
+            this.refClassType = refClassType;
             this.mappedBy = mappedBy;
+        }
+        public ManyToMany(Type refClassType)
+        {
             this.refClassType = refClassType;
         }
-        public OneToOne()
+        public ManyToMany()
         {
-            mappedBy = "";
-            refClassType = null;
+
         }
+        
+        
     }
 }

@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAM_DLL_Project
+namespace DAM
 {
-    public class Class1
+    public enum DatabaseType
     {
+        Sql,
+        Mysql,
+        Oracle,
+        Ole
     }
 }

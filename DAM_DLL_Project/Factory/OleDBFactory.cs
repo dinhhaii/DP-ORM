@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace DAM.Factory
 {
-    public class OracleFactory : DAMAbstractFactory
+    public class OleDBFactory : DAMAbstractFactory
     {
-        public override Query InitQuery()
+        public override DAMEntity InitDAMEntity(IDatabase database, string tableName)
         {
-            return base.InitQuery();
+            return base.InitDAMEntity(database, tableName);
         }
         public override IDatabase InitDatabase(string _conn)
         {
             return base.InitDatabase(_conn);
         }
-        public override DAMEntity InitDAMEntity(IDatabase database, string tableName)
+        public override Query InitQuery()
         {
-            return base.InitDAMEntity(database, tableName);
+            return base.InitQuery();
         }
     }
 }

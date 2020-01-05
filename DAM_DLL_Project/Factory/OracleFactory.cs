@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAM.Factory
 {
-    public class OracleFactory : DAMAbstractFactory
+    class OracleFactory : DAMAbstractFactory
     {
         public override Query InitQuery()
         {
