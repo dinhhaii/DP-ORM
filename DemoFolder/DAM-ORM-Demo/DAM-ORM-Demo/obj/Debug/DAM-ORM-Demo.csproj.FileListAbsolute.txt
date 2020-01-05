@@ -1,0 +1,9 @@
+D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM-ORM-Demo.exe.config
+D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM-ORM-Demo.exe
+D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM-ORM-Demo.pdb
+D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM_DLL_Project.dll
+D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.csprojAssemblyReference.cache
+D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.csproj.CopyComplete
+D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.exe
+D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.pdb
+D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM_DLL_Project.pdb
