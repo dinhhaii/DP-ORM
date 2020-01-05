@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace DAM.AttributeEntity
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
-    class Column : System.Attribute
+    public class Column : System.Attribute
     {
         private string name { get; set; }
 

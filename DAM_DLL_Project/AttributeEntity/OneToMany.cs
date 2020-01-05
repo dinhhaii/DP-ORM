@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DAM.AttributeEntity
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
-    class OneToMany : System.Attribute
+    public class OneToMany : System.Attribute
     {
         public Type refClassType { get; set; }
         public string mappedBy { get; set; }

@@ -57,11 +57,6 @@
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\OracleClientDB.cs" />
     <Compile Include="Database\SqlClientDB.cs" />
-    <Compile Include="Entity\Client.cs" />
-    <Compile Include="Entity\ClientDetail.cs" />
-    <Compile Include="Entity\Information.cs" />
-    <Compile Include="Entity\Organization.cs" />
-    <Compile Include="Entity\Team.cs" />
     <Compile Include="Factory\DAMAbstractFactory.cs" />
     <Compile Include="Factory\DAMFactory.cs" />
     <Compile Include="Factory\OleDBFactory.cs" />

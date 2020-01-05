@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DAM.AttributeEntity
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
-    class ManyToOne : System.Attribute
+    public class ManyToOne : System.Attribute
     {
         public ManyToOne() { }
     }
