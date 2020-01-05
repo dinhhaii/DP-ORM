@@ -2,3 +2,8 @@ D:\DesignPattern\GitProject\DP-ORM\DAM_DLL_Project\bin\Debug\DAM_DLL_Project.dll
 D:\DesignPattern\GitProject\DP-ORM\DAM_DLL_Project\bin\Debug\DAM_DLL_Project.pdb
 D:\DesignPattern\GitProject\DP-ORM\DAM_DLL_Project\obj\Debug\DAM_DLL_Project.dll
 D:\DesignPattern\GitProject\DP-ORM\DAM_DLL_Project\obj\Debug\DAM_DLL_Project.pdb
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DAM_DLL_Project\bin\Debug\DAM_DLL_Project.dll
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DAM_DLL_Project\bin\Debug\DAM_DLL_Project.pdb
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DAM_DLL_Project\obj\Debug\DAM_DLL_Project.csproj.CoreCompileInputs.cache
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DAM_DLL_Project\obj\Debug\DAM_DLL_Project.dll
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DAM_DLL_Project\obj\Debug\DAM_DLL_Project.pdb

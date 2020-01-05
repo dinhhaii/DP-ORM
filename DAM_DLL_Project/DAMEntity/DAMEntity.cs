@@ -28,6 +28,8 @@ namespace DAM
         public abstract List<object> ToList();
 
         public abstract object FindById(object key);
+        public abstract List<object> FindByQuery(Query query);
+        public abstract List<object> FindByObject(object obj);
 
         public abstract int Update(List<object> listObj);
 

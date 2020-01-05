@@ -40,6 +40,19 @@ namespace DAM
             return 0;
         }
 
+
+        public override List<object> FindByQuery(Query query)
+        {
+            return _database.findByQuery(query, TableName);
+        }
+
+
+        public override List<object> FindByObject(object obj)
+        {
+            return _database.findByObject(obj, TableName);
+        }
+
+
         public override int Update(List<object> listObj)
         {
             int result = 0;

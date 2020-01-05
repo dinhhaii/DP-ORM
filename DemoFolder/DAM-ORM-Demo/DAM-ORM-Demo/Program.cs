@@ -18,13 +18,17 @@ namespace DAM_ORM_Demo
             Type entityType = Type.GetType(typeName);
             string hauConnectionString = @"Data Source=ADMIN\SQLEXPRESS;Initial Catalog=dam;Integrated Security=True";
             //string haiConnectionString = @"Data Source=.\sqlexpress;Initial Catalog=dam;Integrated Security=True";
-            IDatabase database = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDatabase(hauConnectionString);
+            string thanhhaiConnectionString = @"Data Source=DESKTOP-2GTF1EB\SQLEXPRESS; Initial Catalog = dam; Integrated Security = True";
+
+            //IDatabase database = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDatabase(hauConnectionString);
+            IDatabase database = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDatabase(thanhhaiConnectionString);
 
             DAMEntity sqlDAMEntity = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDAMEntity(database, "Organization");
 
             DAMEntity clientEntity = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDAMEntity(database, "Client");
-            List<object> clients = (List<object>)(Object)clientEntity.ToList();
-            Console.WriteLine(clients[0]);
+            //List<object> clients = (List<object>)(Object)clientEntity.ToList();
+               
+            //Console.WriteLine(clients[0]);
             Console.ReadKey();
         }
     }

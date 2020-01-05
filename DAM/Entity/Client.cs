@@ -30,5 +30,18 @@ namespace DAM.Entity
 
         [OneToOne(refClassType:typeof(ClientDetail),mappedBy:"client")]
         public ClientDetail clientDetail { get; set; }
+
+
+        public override string ToString()
+        {
+            string result = $"Client Id:{Id}  Username:{Username}  Password:{Password}"
+            + $" Organization ID : " + (organization == null ? "null" : $"{organization.Id}")
+            + $" Organization Name : " + (organization== null ? "null" : $"{organization.Name}")
+            + $" Team ID : " + (team == null ? "null" : $"{team.Id}")
+            + $" Team Name : " + (team == null ? "null" : $"{team.Name}");
+
+
+            return result;
+        }
     }
 }

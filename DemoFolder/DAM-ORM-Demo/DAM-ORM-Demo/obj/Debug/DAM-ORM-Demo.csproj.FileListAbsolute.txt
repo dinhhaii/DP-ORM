@@ -7,3 +7,12 @@ D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.csp
 D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.exe
 D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.pdb
 D:\DesignPattern\GitProject\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM_DLL_Project.pdb
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DemoFolder\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM-ORM-Demo.exe.config
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DemoFolder\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM-ORM-Demo.exe
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DemoFolder\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM-ORM-Demo.pdb
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DemoFolder\DAM-ORM-Demo\DAM-ORM-Demo\bin\Debug\DAM_DLL_Project.pdb
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DemoFolder\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.csprojAssemblyReference.cache
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DemoFolder\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.csproj.CoreCompileInputs.cache
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DemoFolder\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.csproj.CopyComplete
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DemoFolder\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.exe
+C:\Users\Thanh Hai\Desktop\orm\DP-ORM\DemoFolder\DAM-ORM-Demo\DAM-ORM-Demo\obj\Debug\DAM-ORM-Demo.pdb

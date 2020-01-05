@@ -22,6 +22,17 @@ namespace DAM
             return _database.GenerateListFromTable(TableName);
         }
 
+        public override List<object> FindByQuery(Query query)
+        {
+            return _database.findByQuery(query, TableName);
+        }
+
+
+        public override List<object> FindByObject(object obj)
+        {
+            return _database.findByObject(obj, TableName);
+        }
+
         public override object FindById(object key)
         {
             try

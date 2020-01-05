@@ -27,7 +27,14 @@ namespace DAM
         {
             throw new NotImplementedException();
         }
-
+        public override List<object> FindByQuery(Query query)
+        {
+            throw new NotImplementedException();
+        }
+        public override List<object> FindByObject(object obj)
+        {
+            throw new NotImplementedException();
+        }
         public override int Update(List<object> listObj)
         {
             throw new NotImplementedException();
