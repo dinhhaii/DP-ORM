@@ -312,7 +312,7 @@ namespace DAM
                 }
                 catch (Exception e)
                 {
-                    Console.Write(e.Message);
+                    //Console.Write(e.Message);
                 }
             }
 
@@ -626,7 +626,8 @@ namespace DAM
             int result = 0;
             Dictionary<string, object> valueUpdate = new Dictionary<string, object>();
             Attribute[] attributes = Attribute.GetCustomAttributes(obj.GetType());
-            Type entityType = Type.GetType(obj.GetType().ToString());
+            var k = obj.GetType();
+            Type entityType = obj.GetType();
             PropertyInfo[] properties = entityType.GetProperties();
 
             foreach (var attr in attributes)
@@ -710,7 +711,7 @@ namespace DAM
             int result = 0;
             Dictionary<string, object> valueAdd = new Dictionary<string, object>();
             Attribute[] attributes = Attribute.GetCustomAttributes(obj.GetType());
-            Type entityType = Type.GetType(obj.GetType().ToString());
+            Type entityType =obj.GetType();
             PropertyInfo[] properties = entityType.GetProperties();
 
             foreach (var attr in attributes)
@@ -799,7 +800,7 @@ namespace DAM
             int result = 0;
             Dictionary<string, object> valueCondition = new Dictionary<string, object>();
             Attribute[] attributes = Attribute.GetCustomAttributes(obj.GetType());
-            Type entityType = Type.GetType(obj.GetType().ToString());
+            Type entityType = obj.GetType();
             PropertyInfo[] properties = entityType.GetProperties();
 
 

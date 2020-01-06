@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="DAM_DLL_Project, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\DP-ORM\DAM_DLL_Project\bin\Debug\DAM_DLL_Project.dll</HintPath>
+      <HintPath>..\..\..\DAM_DLL_Project\bin\Debug\DAM_DLL_Project.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

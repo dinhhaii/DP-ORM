@@ -20,9 +20,13 @@ namespace DAM_ORM_Demo
             //string haiConnectionString = @"Data Source=.\sqlexpress;Initial Catalog=dam;Integrated Security=True";
             IDatabase database = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDatabase(hauConnectionString);
 
-            DAMEntity sqlDAMEntity = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDAMEntity(database, "Organization");
-
             DAMEntity clientEntity = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDAMEntity(database, "Client");
+
+            Client client = new Client();
+            client.Username = "Nguyen Duy Hau";
+            client.Password = "123";
+            clientEntity.Add(client);
+
             List<object> clients = (List<object>)(Object)clientEntity.ToList();
             Console.WriteLine(clients[0]);
             Console.ReadKey();

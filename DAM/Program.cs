@@ -22,6 +22,12 @@ namespace DAM
             IDatabase database = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDatabase(hauConnectionString);
 
             DAMEntity clientEntity = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDAMEntity(database, "Client");
+
+
+            Client client = new Client();
+            client.Username = "Nguyen Duy Hau";
+            client.Password = "123";
+            clientEntity.Add(client);
             List<object> clients = clientEntity.ToList();
 
             Console.WriteLine("HELLO");
