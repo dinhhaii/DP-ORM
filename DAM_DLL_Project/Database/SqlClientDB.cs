@@ -781,7 +781,7 @@ namespace DAM
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message );
+                    //Console.WriteLine(ex.Message );
                 }
 
                 query.Insert(tableName).Values(valueAdd);
@@ -884,7 +884,7 @@ namespace DAM
                 }
                 catch (Exception e)
                 {
-                    Console.Write(e.Message);
+                   // Console.Write(e.Message);
                 }
 
             }
@@ -929,7 +929,7 @@ namespace DAM
                 }
                 catch (Exception e)
                 {
-                    Console.Write(e.Message);
+                    //Console.Write(e.Message);
                 }
             }
 
@@ -976,7 +976,7 @@ namespace DAM
                     }
                     catch (Exception e)
                     {
-                        Console.Write(e.Message);
+                       // Console.Write(e.Message);
                     }
                 }
             }
@@ -1009,7 +1009,7 @@ namespace DAM
                 }
                 catch (Exception e)
                 {
-                    Console.Write(e.Message);
+                    // Console.Write(e.Message);
                 }
             }
 

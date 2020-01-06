@@ -2,3 +2,4 @@ D:\DesignPattern\GitProject\DP-ORM\DAM_DLL_Project\bin\Debug\DAM_DLL_Project.dll
 D:\DesignPattern\GitProject\DP-ORM\DAM_DLL_Project\bin\Debug\DAM_DLL_Project.pdb
 D:\DesignPattern\GitProject\DP-ORM\DAM_DLL_Project\obj\Debug\DAM_DLL_Project.dll
 D:\DesignPattern\GitProject\DP-ORM\DAM_DLL_Project\obj\Debug\DAM_DLL_Project.pdb
+D:\DesignPattern\GitProject\DP-ORM\DAM_DLL_Project\obj\Debug\DAM_DLL_Project.csprojAssemblyReference.cache

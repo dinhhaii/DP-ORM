@@ -22,13 +22,37 @@ namespace DAM_ORM_Demo
 
             DAMEntity clientEntity = DAMFactory.GetDAMFactory(DatabaseType.Sql).InitDAMEntity(database, "Client");
 
+            Console.WriteLine("Total client in Database before Add: ");
+            List<object> clients = (List<object>)(Object)clientEntity.ToList();
+            Console.WriteLine(clients.Count.ToString());
+            Console.WriteLine("Add Client To DB: ");
             Client client = new Client();
             client.Username = "Nguyen Duy Hau";
             client.Password = "123";
-            clientEntity.Add(client);
+            if(clientEntity.Add(client)>0)
+            {
+                Console.WriteLine("Add Client To DB Successful. ");
+            }
+            Console.WriteLine("Total client in Database after Add: ");
+            List<object> clientsAfterAdd = (List<object>)(Object)clientEntity.ToList();
+            Console.WriteLine(clientsAfterAdd.Count.ToString());
 
-            List<object> clients = (List<object>)(Object)clientEntity.ToList();
-            Console.WriteLine(clients[0]);
+            Console.WriteLine("Update Client in Database:");
+
+            Client clientUpdate =  clientEntity.FindById(2) as Client;
+            Console.WriteLine("Client before updated:");
+            Console.WriteLine("Username: " + clientUpdate.Username + ", " + "Password: " +clientUpdate.Password);
+            clientUpdate.Username = "Nguyen Duy Hau Updated";
+            clientEntity.Update(clientUpdate);
+            Console.WriteLine("Client after updated:");
+            Console.WriteLine("Username: " + clientUpdate.Username + ", " + "Password: " + clientUpdate.Password);
+
+            clientEntity.Delete(clientsAfterAdd[clientsAfterAdd.Count-1]);
+
+
+            Console.WriteLine("Total client in Database before Delete: ");
+            List<object> clientsAfterDelete = (List<object>)(Object)clientEntity.ToList();
+            Console.WriteLine(clientsAfterDelete.Count.ToString());
             Console.ReadKey();
         }
     }
